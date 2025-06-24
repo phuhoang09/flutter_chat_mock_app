@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import '../models/message.dart';
+import '../widgets/fade_in_message.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -14,7 +15,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final Random _random = Random();
 
   List<String> _generateSampleImages() {
-    final count = _random.nextInt(7) + 4; // từ 4 đến 10
+    final count = _random.nextInt(7) + 4;
     return List.generate(
       count,
       (index) =>
@@ -24,8 +25,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   final List<Message> _messages = [];
   final TextEditingController _controller = TextEditingController();
-  final ScrollController _scrollController =
-      ScrollController(); // 📌 Thêm dòng này
+  final ScrollController _scrollController = ScrollController();
 
   final List<String> _botResponses = [
     'Chào bạn!',
@@ -33,38 +33,20 @@ class _ChatScreenState extends State<ChatScreen> {
     'Trời hôm nay đẹp quá!',
     'Bạn ăn cơm chưa?',
     'Tôi là chatbot giả lập.',
-    'Hãy thử nhắn thêm gì đó nữa.',
     'Flutter rất tuyệt!',
-    'Tôi có thể giúp gì cho bạn?',
-    'Bạn thích lập trình chứ?',
-    'Hôm nay bạn thấy thế nào?',
-    'Tôi thích học máy.',
-    'Bạn đang dùng Flutter phiên bản mấy?',
-    'Bạn có thích AI không?',
-    'Chúng ta đang chat!',
-    'Bạn đã từng thử React Native chưa?',
-    'Bạn có đang học code không?',
-    'Cảm ơn vì đã nhắn cho tôi.',
-    'Bạn có câu hỏi gì không?',
-    'Tôi không có cảm xúc...',
-    'Thử gửi thêm tin nữa xem!',
-    'Này bạn!',
-    'Haha, vui quá!',
-    'Tôi là robot.',
     'Bạn cần nghỉ ngơi đó.',
-    'Thử lại xem sao!',
-    'Bạn làm tôi thấy thú vị.',
-    'Cố gắng lên!',
-    'Chúng ta đang mô phỏng thôi mà!',
-    'Bảo trọng nha!',
+    'Cảm ơn vì đã nhắn cho tôi.',
     'Gặp lại sau nhé!',
+    'Tôi là robot.',
+    'Thử lại xem sao!',
+    'Cố gắng lên!',
   ];
 
   void _showImageFullscreen(String imageUrl) {
     showDialog(
       context: context,
       builder: (_) => GestureDetector(
-        onTap: () => Navigator.pop(context), // 👈 Tap để thoát
+        onTap: () => Navigator.pop(context),
         child: Container(
           color: Colors.black,
           child: Center(
@@ -81,7 +63,6 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _scrollToBottom() {
-    // Delay nhẹ để đảm bảo build xong mới scroll
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
@@ -103,11 +84,9 @@ class _ChatScreenState extends State<ChatScreen> {
     _scrollToBottom();
     _controller.clear();
 
-    // Nếu người dùng gõ "pics"
     if (text.toLowerCase() == 'pics') {
       Future.delayed(const Duration(milliseconds: 500), () {
-        final images =
-            _generateSampleImages(); // 👈 tạo số lượng ảnh ngẫu nhiên
+        final images = _generateSampleImages();
         setState(() {
           _messages.add(
             Message(text: 'Đây là những hình ảnh mẫu:', isSentByUser: false),
@@ -120,8 +99,7 @@ class _ChatScreenState extends State<ChatScreen> {
       });
     } else {
       Future.delayed(const Duration(seconds: 1), () {
-        final random = Random();
-        final response = _botResponses[random.nextInt(_botResponses.length)];
+        final response = _botResponses[_random.nextInt(_botResponses.length)];
         setState(() {
           _messages.add(Message(text: response, isSentByUser: false));
         });
@@ -138,28 +116,26 @@ class _ChatScreenState extends State<ChatScreen> {
         children: [
           Expanded(
             child: ListView.builder(
-              controller: _scrollController, // 👈 Gắn controller
+              controller: _scrollController,
               padding: const EdgeInsets.all(12),
               itemCount: _messages.length,
               itemBuilder: (context, index) {
                 final msg = _messages[index];
+                Widget messageWidget;
 
-                // Nếu là phần đánh dấu để hiển thị ảnh
                 if (msg.text == '__IMAGES__' && msg.imageUrls != null) {
                   final displayedImages = msg.imageUrls!.take(9).toList();
                   final screenWidth = MediaQuery.of(context).size.width;
                   final imageWidth = (screenWidth - 48) / 3;
 
-                  return Padding(
+                  messageWidget = Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: Wrap(
                       spacing: 8,
                       runSpacing: 8,
                       children: displayedImages.map((url) {
                         return GestureDetector(
-                          onTap: () => _showImageFullscreen(
-                            url,
-                          ), // 👈 Mở ảnh lớn khi chạm
+                          onTap: () => _showImageFullscreen(url),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: Image.network(
@@ -173,25 +149,27 @@ class _ChatScreenState extends State<ChatScreen> {
                       }).toList(),
                     ),
                   );
+                } else {
+                  messageWidget = Align(
+                    alignment: msg.isSentByUser
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(vertical: 4),
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: msg.isSentByUser
+                            ? Colors.blue[100]
+                            : Colors.grey[300],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(msg.text),
+                    ),
+                  );
                 }
 
-                // Các tin nhắn bình thường
-                return Align(
-                  alignment: msg.isSentByUser
-                      ? Alignment.centerRight
-                      : Alignment.centerLeft,
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 4),
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: msg.isSentByUser
-                          ? Colors.blue[100]
-                          : Colors.grey[300],
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(msg.text),
-                  ),
-                );
+                // 👇 Bọc toàn bộ message trong hiệu ứng fade-in
+                return FadeInMessage(child: messageWidget);
               },
             ),
           ),
@@ -203,7 +181,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 Expanded(
                   child: TextField(
                     controller: _controller,
-                    onSubmitted: (_) => _sendMessage(), // 👈 Gửi khi nhấn Enter
+                    onSubmitted: (_) => _sendMessage(),
                     decoration: const InputDecoration(
                       hintText: 'Nhập tin nhắn...',
                       border: OutlineInputBorder(),
@@ -226,7 +204,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void dispose() {
     _controller.dispose();
-    _scrollController.dispose(); // 📌 đừng quên dispose controller
+    _scrollController.dispose();
     super.dispose();
   }
 }
