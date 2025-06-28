@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_mock_app/utils/image_utils.dart';
 import 'package:flutter_chat_mock_app/widgets/product_item.dart';
 import '../models/message.dart';
 import '../widgets/fade_in_wrapper.dart';
@@ -277,25 +279,49 @@ class _ChatScreenState extends State<ChatScreen> {
                   //   ),
                   // );
 
-                  messageWidget = Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: SizedBox(
-                      height: imageWidth, // chiều cao của ảnh để giới hạn dòng
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: displayedImages.length,
-                        separatorBuilder: (_, __) => const SizedBox(width: 8),
-                        itemBuilder: (context, i) {
-                          final url = displayedImages[i];
-                          return GestureDetector(
-                            onTap: () => _showImageFullscreen(url),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: FadeInNetworkImage(
-                                url: url,
-                                width: imageWidth,
-                                height: imageWidth,
-                              ),
+                  messageWidget = Align(
+                    alignment: msg.isSentByUser
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          final maxWidth = constraints.maxWidth * 0.8;
+                          return ConstrainedBox(
+                            constraints: BoxConstraints(
+                              minWidth: 0,
+                              maxWidth: maxWidth,
+                              minHeight: imageWidth,
+                              maxHeight: imageWidth,
+                            ),
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: displayedImages.length,
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(width: 8),
+                              shrinkWrap: true,
+                              itemBuilder: (context, i) {
+                                final url = displayedImages[i];
+                                return GestureDetector(
+                                  onTap: () => _showImageFullscreen(url),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: url.startsWith('http')
+                                        ? FadeInNetworkImage(
+                                            url: url,
+                                            width: imageWidth,
+                                            height: imageWidth,
+                                          )
+                                        : Image.file(
+                                            File(url),
+                                            width: imageWidth,
+                                            height: imageWidth,
+                                            fit: BoxFit.cover,
+                                          ),
+                                  ),
+                                );
+                              },
                             ),
                           );
                         },
@@ -329,6 +355,25 @@ class _ChatScreenState extends State<ChatScreen> {
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
+                IconButton(
+                  icon: const Icon(Icons.image, color: Colors.white),
+                  onPressed: () async {
+                    final List<String> imagePaths =
+                        await pickAndCompressMultipleImages();
+                    if (imagePaths.isNotEmpty) {
+                      setState(() {
+                        _messages.add(
+                          Message(
+                            text: '__IMAGES__',
+                            isSentByUser: true,
+                            imageUrls: imagePaths,
+                          ),
+                        );
+                      });
+                      _scrollToBottom(500);
+                    }
+                  },
+                ),
                 Expanded(
                   // child: GestureDetector(
                   //   behavior: HitTestBehavior.translucent,

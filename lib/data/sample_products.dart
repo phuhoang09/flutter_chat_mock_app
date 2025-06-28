@@ -46,7 +46,7 @@ final List<Product> sampleProducts = [
   Product(
     name: 'Cáp sạc nhanh USB-C',
     price: '99.000₫',
-    imageUrl: 'https://picsum.photos/id/1017/200/200',
+    imageUrl: 'https://picsum.photos/id/237/200/200',
     link: 'https://www.google.com/search?q=Cáp+sạc+nhanh+USB-C',
   ),
   Product(
