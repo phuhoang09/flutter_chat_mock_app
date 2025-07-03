@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_mock_app/routes/fade_page_route.dart';
+import 'package:flutter_chat_mock_app/screens/register_screen.dart';
+import 'package:flutter_chat_mock_app/services/auth_service.dart';
 import '../theme/app_colors.dart';
-import '../data/sample_users.dart';
-import '../models/user.dart';
-import 'main_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,28 +17,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _obscurePassword = true;
 
-  void _attemptLogin() {
-    final username = _usernameController.text.trim();
-    final password = _passwordController.text.trim();
-
-    final matchedUsers = sampleUsers.where(
-      (u) => u.username == username && u.password == password,
-    );
-
-    final User? user = matchedUsers.isNotEmpty ? matchedUsers.first : null;
-
-    if (user != null) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const MainScreen()),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Tài khoản hoặc mật khẩu không đúng')),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,11 +27,12 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset(
-                'assets/images/cat_head_purple.png',
-                width: 160,
-                height: 160,
-              ),
+              // Image.asset(
+              //   'assets/images/cat_head_purple.png',
+              //   width: 160,
+              //   height: 160,
+              // ),
+              Icon(Icons.pets_rounded, color: AppColors.appBar, size: 200),
               const SizedBox(height: 32),
               TextField(
                 controller: _usernameController,
@@ -87,9 +66,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   fillColor: Colors.white,
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
               ElevatedButton(
-                onPressed: _attemptLogin,
+                //onPressed: _attemptLogin,
+                onPressed: () {
+                  final username = _usernameController.text.trim();
+                  final password = _passwordController.text.trim();
+
+                  AuthService.loginAndNavigate(context, username, password);
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.sendButton,
                   padding: const EdgeInsets.symmetric(
@@ -103,6 +88,21 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: const Text(
                   'Đăng nhập',
                   style: TextStyle(fontSize: 16, color: Colors.white),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(
+                    context,
+                  ).push(FadePageRoute(page: const RegisterScreen()));
+                },
+                child: const Text(
+                  'Tạo Tài Khoản',
+                  style: TextStyle(
+                    color: AppColors.sendButton,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],
