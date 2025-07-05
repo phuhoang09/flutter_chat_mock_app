@@ -10,19 +10,19 @@ class ApiService {
     ),
   );
 
-  static Future<Response> login(String accountName, String password) {
+  static Future<Response> login(String phoneNumber, String password) {
     return _dio.post(
       '/v1/api/app/auth/login',
       options: Options(headers: {'system': 'capcat_app'}),
-      data: {'account_name': accountName, 'password': password},
+      data: {'account_name': phoneNumber, 'password': password},
     );
   }
 
-  static Future<Response> register(String accountName, String password) {
+  static Future<Response> register(String phoneNumber, String password) {
     return _dio.post(
       '/v1/api/app/auth/register',
       options: Options(headers: {'system': 'capcat_app'}),
-      data: {'account_name': accountName, 'password': password},
+      data: {'account_name': phoneNumber, 'password': password},
     );
   }
 

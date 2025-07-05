@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "286431093243",
+    "project_id": "capcat-auth",
+    "storage_bucket": "capcat-auth.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:286431093243:android:965fffe9adcea7f1d82b5e",
+        "android_client_info": {
+          "package_name": "com.example.flutter_chat_mock_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "286431093243-7dvia1rrfddgt3i807aum6sci8ss9bkc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.flutter_chat_mock_app",
+            "certificate_hash": "7b506a7b23ff9eb81ee43d819e71c1d861b2afc0"
+          }
+        },
+        {
+          "client_id": "286431093243-0ibdm5iqoo35rev54hctqor3i2akc89j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOag4cKWAPX_KX2XzEbnf2bAtG9MoUJ0Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "286431093243-0ibdm5iqoo35rev54hctqor3i2akc89j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

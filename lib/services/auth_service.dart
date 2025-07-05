@@ -10,13 +10,13 @@ class AuthService {
 
   static Future<void> registerAndNavigate(
     BuildContext context,
-    String username,
+    String phoneNumber,
     String password,
   ) async {
     try {
-      final response = await ApiService.register(username, password);
+      final response = await ApiService.register(phoneNumber, password);
       if (response.statusCode == 201) {
-        await loginAndNavigate(context, username, password);
+        await loginAndNavigate(context, phoneNumber, password);
       } else {
         _showErrorDialog(context, 'Không thể tạo tài khoản');
       }
@@ -31,11 +31,11 @@ class AuthService {
   /// Gửi yêu cầu đăng nhập và điều hướng nếu thành công
   static Future<void> loginAndNavigate(
     BuildContext context,
-    String username,
+    String phoneNumber,
     String password,
   ) async {
     try {
-      final response = await ApiService.login(username, password);
+      final response = await ApiService.login(phoneNumber, password);
       print(response);
 
       if (response.statusCode == 201) {

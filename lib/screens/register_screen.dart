@@ -1,8 +1,5 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_mock_app/services/auth_service.dart';
-import 'package:http/http.dart' as http;
 import '../theme/app_colors.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -92,7 +89,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 controller: _passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
-                  labelText: 'Mật khẩu',
+                  labelText: 'Mật khẩu (chứa ít nhất 6 ký tự)',
                   prefixIcon: const Icon(Icons.lock),
                 ),
               ),
@@ -110,11 +107,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    final username = _phoneNumberController.text.trim();
+                    final phoneNumber = _phoneNumberController.text.trim();
                     final password = _passwordController.text.trim();
                     final confirmPassword = _confirmPasswordController.text
                         .trim();
-                    registerAndLogin(username, password, confirmPassword);
+                    registerAndLogin(phoneNumber, password, confirmPassword);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.sendButton,

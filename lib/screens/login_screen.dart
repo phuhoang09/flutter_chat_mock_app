@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_mock_app/routes/fade_page_route.dart';
+import 'package:flutter_chat_mock_app/screens/main_screen.dart';
 import 'package:flutter_chat_mock_app/screens/register_screen.dart';
 import 'package:flutter_chat_mock_app/services/auth_service.dart';
+import 'package:flutter_chat_mock_app/services/google_sign_in_service.dart';
 import '../theme/app_colors.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -12,7 +14,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   bool _obscurePassword = true;
@@ -35,9 +37,9 @@ class _LoginScreenState extends State<LoginScreen> {
               Icon(Icons.pets_rounded, color: AppColors.appBar, size: 200),
               const SizedBox(height: 32),
               TextField(
-                controller: _usernameController,
+                controller: _phoneNumberController,
                 decoration: InputDecoration(
-                  labelText: 'Tên đăng nhập',
+                  labelText: 'Số điện thoại',
                   prefixIcon: const Icon(Icons.person),
                   filled: true,
                   fillColor: Colors.white,
@@ -70,10 +72,10 @@ class _LoginScreenState extends State<LoginScreen> {
               ElevatedButton(
                 //onPressed: _attemptLogin,
                 onPressed: () {
-                  final username = _usernameController.text.trim();
+                  final phoneNumber = _phoneNumberController.text.trim();
                   final password = _passwordController.text.trim();
 
-                  AuthService.loginAndNavigate(context, username, password);
+                  AuthService.loginAndNavigate(context, phoneNumber, password);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.sendButton,
@@ -89,6 +91,27 @@ class _LoginScreenState extends State<LoginScreen> {
                   'Đăng nhập',
                   style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () async {
+                  final userCredential =
+                      await GoogleSignInService.signInWithGoogle();
+                  if (userCredential != null) {
+                    GoogleSignInService.printFirebaseIdToken();
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (_) => const MainScreen()),
+                    );
+                  } else {
+                    // Người dùng đã huỷ
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text('Đăng nhập bằng Google'),
               ),
               const SizedBox(height: 12),
               TextButton(
@@ -114,7 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
-    _usernameController.dispose();
+    _phoneNumberController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
