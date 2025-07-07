@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_mock_app/screens/otp_screen.dart';
+import 'package:flutter_chat_mock_app/services/api_service.dart';
 import 'package:flutter_chat_mock_app/services/auth_service.dart';
 import '../theme/app_colors.dart';
 
@@ -10,6 +12,7 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  bool isLoading = false;
   final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
@@ -26,7 +29,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return password.length >= 6;
   }
 
-  void registerAndLogin(
+  void validateRegistration(
     String phoneNumber,
     String password,
     String confirmPassword,
@@ -50,8 +53,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _showMessage('Mật khẩu không khớp.');
       return;
     }
+  }
 
-    AuthService.registerAndNavigate(context, phoneNumber, password);
+  Future<void> _sendOtpAndNavigate(phoneNumber, password) async {
+    setState(() => isLoading = true);
+
+    try {
+      await ApiService.sendOtp(phoneNumber); // Gửi OTP đến backend
+
+      // Thành công → chuyển sang màn hình nhập OTP
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) =>
+              OtpScreen(phoneNumber: phoneNumber, password: password),
+        ),
+      );
+    } catch (e) {
+      // Nếu thất bại, hiển thị lỗi
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Gửi OTP thất bại: ${e.toString()}")),
+      );
+    } finally {
+      setState(() => isLoading = false);
+    }
   }
 
   void _showMessage(String message) {
@@ -105,27 +130,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    final phoneNumber = _phoneNumberController.text.trim();
-                    final password = _passwordController.text.trim();
-                    final confirmPassword = _confirmPasswordController.text
-                        .trim();
-                    registerAndLogin(phoneNumber, password, confirmPassword);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.sendButton,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                  child: const Text(
-                    'Tạo Tài Khoản',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ),
+                child: isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : ElevatedButton(
+                        onPressed: () async {
+                          final phoneNumber = _phoneNumberController.text
+                              .trim();
+                          final password = _passwordController.text.trim();
+                          final confirmPassword = _confirmPasswordController
+                              .text
+                              .trim();
+                          validateRegistration(
+                            phoneNumber,
+                            password,
+                            confirmPassword,
+                          );
+                          _sendOtpAndNavigate(phoneNumber, password);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.sendButton,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                        child: const Text(
+                          'Tạo Tài Khoản',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
               ),
               const SizedBox(height: 12),
               TextButton(

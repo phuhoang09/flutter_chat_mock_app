@@ -26,6 +26,31 @@ class ApiService {
     );
   }
 
+  static Future<void> sendOtp(String phone) async {
+    try {
+      final response = await _dio.post('/send-otp', data: {'phone': phone});
+      if (response.statusCode != 200) {
+        throw Exception('Gửi OTP thất bại');
+      }
+    } catch (e) {
+      print("Lỗi gửi OTP: $e");
+      rethrow;
+    }
+  }
+
+  static Future<bool> verifyOtp(String phone, String otp) async {
+    try {
+      final response = await _dio.post(
+        '/verify-otp',
+        data: {'phone': phone, 'otp': otp},
+      );
+      return response.statusCode == 200;
+    } catch (e) {
+      print("Lỗi xác minh OTP: $e");
+      return false;
+    }
+  }
+
   static Future<Response> getProfile(String token) {
     return _dio.get(
       '/profile',
