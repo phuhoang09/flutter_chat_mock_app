@@ -1,7 +1,7 @@
 import '../models/user.dart';
 
 final List<User> sampleUsers = [
-  User(username: 'alice', password: '1234', fullName: 'Alice Nguyễn'),
-  User(username: 'bob', password: 'abcd', fullName: 'Bob Trần'),
-  User(username: 'charlie', password: 'qwer', fullName: 'Charlie Lê'),
+  User(phoneNumber: '0845111111', password: '123456', fullName: 'Alice Nguyễn'),
+  User(phoneNumber: '0355111111', password: 'abcd', fullName: 'Bob Trần'),
+  User(phoneNumber: '0945111111', password: 'qwer', fullName: 'Charlie Lê'),
 ];

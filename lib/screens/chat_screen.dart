@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_mock_app/services/socket_service.dart';
 import 'package:flutter_chat_mock_app/utils/image_utils.dart';
 import 'package:flutter_chat_mock_app/widgets/product_item.dart';
 import '../models/message.dart';
@@ -19,16 +20,39 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  WebSocket? _socket;
   final Random _random = Random();
   late final StreamSubscription<bool> _keyboardSubscription;
   // final FocusNode _focusNode = FocusNode();
+
+  final List<Message> _messages = [];
+  final TextEditingController _controller = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+  // late final StreamSubscription<bool> _keyboardSubscription;
+
+  final List<String> _botResponses = [
+    'Chào bạn!',
+    'Bạn đang làm gì đó?',
+    'Trời hôm nay đẹp quá!',
+    'Bạn ăn cơm chưa?',
+    'Tôi là chatbot giả lập.',
+    'Flutter rất tuyệt!',
+    'Bạn cần nghỉ ngơi đó.',
+    'Cảm ơn vì đã nhắn cho tôi.',
+    'Gặp lại sau nhé!',
+    'Tôi là robot.',
+    'Thử lại xem sao!',
+    'Cố gắng lên!',
+  ];
 
   @override
   void initState() {
     super.initState();
 
+    connectWebSocket();
+
     // Tạo hội thoại mẫu
-    _initializeDefaultConversation();
+    //_initializeDefaultConversation();
 
     // Theo dõi sự kiện keyboard
     _keyboardSubscription = KeyboardVisibilityController().onChange.listen((
@@ -48,6 +72,37 @@ class _ChatScreenState extends State<ChatScreen> {
     //     });
     //   }
     // });
+  }
+
+  void connectWebSocket() async {
+    try {
+      _socket = await WebSocket.connect('wss://efdda4f9a811.ngrok-free.app/ws');
+      print('✅ Connected to WebSocket');
+
+      _socket!.listen(
+        (data) {
+          print('📩 Received: $data');
+          setState(
+            () => _messages.add(Message(text: data, isSentByUser: false)),
+          );
+        },
+        onError: (err) => print('❌ Error: $err'),
+        onDone: () => print('🔌 Disconnected'),
+      );
+    } catch (e) {
+      print('❗ WebSocket Error: $e');
+    }
+  }
+
+  void _sendMessage(String text) {
+    if (_socket != null && _socket!.readyState == WebSocket.open) {
+      _socket!.add(text);
+      setState(() => _messages.add(Message(text: text, isSentByUser: true)));
+      _controller.clear();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollToBottom(500);
+      });
+    }
   }
 
   void _initializeDefaultConversation() {
@@ -83,26 +138,6 @@ class _ChatScreenState extends State<ChatScreen> {
           'https://picsum.photos/seed/image${_random.nextInt(1000)}/200/200',
     );
   }
-
-  final List<Message> _messages = [];
-  final TextEditingController _controller = TextEditingController();
-  final ScrollController _scrollController = ScrollController();
-  // late final StreamSubscription<bool> _keyboardSubscription;
-
-  final List<String> _botResponses = [
-    'Chào bạn!',
-    'Bạn đang làm gì đó?',
-    'Trời hôm nay đẹp quá!',
-    'Bạn ăn cơm chưa?',
-    'Tôi là chatbot giả lập.',
-    'Flutter rất tuyệt!',
-    'Bạn cần nghỉ ngơi đó.',
-    'Cảm ơn vì đã nhắn cho tôi.',
-    'Gặp lại sau nhé!',
-    'Tôi là robot.',
-    'Thử lại xem sao!',
-    'Cố gắng lên!',
-  ];
 
   void _showImageFullscreen(String imageUrl) {
     showDialog(
@@ -162,7 +197,7 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  void _sendMessage() {
+  void _sendMessageFake() {
     final text = _controller.text.trim();
     if (text.isEmpty) return;
 
@@ -406,7 +441,10 @@ class _ChatScreenState extends State<ChatScreen> {
                   backgroundColor: AppColors.sendButton,
                   child: IconButton(
                     icon: const Icon(Icons.send, color: Colors.white),
-                    onPressed: _sendMessage,
+                    //onPressed: _sendMessageFake,
+                    onPressed: () {
+                      _sendMessage(_controller.text);
+                    },
                   ),
                 ),
               ],
@@ -423,6 +461,7 @@ class _ChatScreenState extends State<ChatScreen> {
     // _focusNode.dispose();
     _controller.dispose();
     _scrollController.dispose();
+    _socket?.close();
     super.dispose();
   }
 }

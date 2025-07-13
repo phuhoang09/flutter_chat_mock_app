@@ -1,10 +1,10 @@
 class User {
-  final String username;
+  final String phoneNumber;
   final String password;
   final String fullName;
 
   User({
-    required this.username,
+    required this.phoneNumber,
     required this.password,
     required this.fullName,
   });

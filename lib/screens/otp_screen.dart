@@ -6,8 +6,11 @@ class OtpScreen extends StatefulWidget {
   final String phoneNumber;
   final String password;
 
-  const OtpScreen({Key? key, required this.phoneNumber, required this.password})
-    : super(key: key);
+  const OtpScreen({
+    super.key,
+    required this.phoneNumber,
+    required this.password,
+  });
 
   @override
   State<OtpScreen> createState() => _OtpScreenState();
@@ -29,6 +32,7 @@ class _OtpScreenState extends State<OtpScreen> {
         context,
         widget.phoneNumber,
         widget.password,
+        _otpController.text,
       );
     } else {
       ScaffoldMessenger.of(
@@ -56,7 +60,14 @@ class _OtpScreenState extends State<OtpScreen> {
             isLoading
                 ? CircularProgressIndicator()
                 : ElevatedButton(
-                    onPressed: _verifyOtp,
+                    onPressed: () async {
+                      await AuthService.registerAndNavigate(
+                        context,
+                        widget.phoneNumber,
+                        widget.password,
+                        _otpController.text,
+                      );
+                    },
                     child: Text("Xác nhận"),
                   ),
           ],

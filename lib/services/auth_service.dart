@@ -12,17 +12,19 @@ class AuthService {
     BuildContext context,
     String phoneNumber,
     String password,
+    String otp,
   ) async {
     try {
-      final response = await ApiService.register(phoneNumber, password);
+      final response = await ApiService.register(phoneNumber, password, otp);
       if (response.statusCode == 201) {
         await loginAndNavigate(context, phoneNumber, password);
       } else {
         _showErrorDialog(context, 'Không thể tạo tài khoản');
       }
     } on DioException catch (e) {
-      final message = e.response?.data['message'] ?? 'Lỗi kết nối';
-      _showErrorDialog(context, message);
+      final response = e.response;
+      // final message = e.response?.data['message'] ?? 'Lỗi kết nối';
+      _showErrorDialog(context, response.toString());
     } catch (_) {
       _showErrorDialog(context, 'Lỗi không xác định');
     }

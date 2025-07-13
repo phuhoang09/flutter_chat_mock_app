@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_mock_app/data/sample_users.dart';
+import 'package:flutter_chat_mock_app/models/user.dart';
 import 'package:flutter_chat_mock_app/routes/fade_page_route.dart';
 import 'package:flutter_chat_mock_app/screens/main_screen.dart';
 import 'package:flutter_chat_mock_app/screens/register_screen.dart';
@@ -18,6 +20,27 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
 
   bool _obscurePassword = true;
+
+  final bool _isLocalTest = false;
+
+  void _attemptLogin(phoneNumber, password) {
+    final matchedUsers = sampleUsers.where(
+      (u) => u.phoneNumber == phoneNumber && u.password == password,
+    );
+
+    final User? user = matchedUsers.isNotEmpty ? matchedUsers.first : null;
+
+    if (user != null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const MainScreen()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Tài khoản hoặc mật khẩu không đúng')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +98,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   final phoneNumber = _phoneNumberController.text.trim();
                   final password = _passwordController.text.trim();
 
-                  AuthService.loginAndNavigate(context, phoneNumber, password);
+                  if (_isLocalTest) {
+                    _attemptLogin(phoneNumber, password);
+                  } else {
+                    AuthService.loginAndNavigate(
+                      context,
+                      phoneNumber,
+                      password,
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.sendButton,

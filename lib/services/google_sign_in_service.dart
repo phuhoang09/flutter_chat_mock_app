@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -26,6 +28,8 @@ class GoogleSignInService {
     final user = FirebaseAuth.instance.currentUser;
 
     if (user != null) {
+      final userJsonString = jsonEncode(user);
+      print(userJsonString);
       final idToken = await user
           .getIdToken(); // hoặc getIdToken(true) để refresh
       print("Firebase ID Token: $idToken");
