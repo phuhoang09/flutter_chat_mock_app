@@ -8,6 +8,10 @@ class ApiService {
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
       headers: {'Content-Type': 'application/json'},
+      validateStatus: (status) {
+        // Chỉ accept các status 2xx
+        return status != null && status >= 200 && status < 300;
+      },
     ),
   );
 
@@ -64,6 +68,14 @@ class ApiService {
       print("Lỗi xác minh OTP: $e");
       return false;
     }
+  }
+
+  static Future<Response> loginSocial(String firebaseUid, num expTimeInSecs) {
+    return _dio.post(
+      '/v1/api/app/auth/social-login',
+      options: Options(headers: {'system': 'capcat_app'}),
+      data: {'uid': firebaseUid, 'exp': expTimeInSecs},
+    );
   }
 
   static Future<Response> getProfile(String token) {

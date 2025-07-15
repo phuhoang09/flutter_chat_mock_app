@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_mock_app/screens/otp_screen.dart';
 import 'package:flutter_chat_mock_app/services/api_service.dart';
-import 'package:flutter_chat_mock_app/services/auth_service.dart';
 import '../theme/app_colors.dart';
 
 class RegisterScreen extends StatefulWidget {

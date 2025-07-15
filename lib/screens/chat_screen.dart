@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_mock_app/services/socket_service.dart';
 import 'package:flutter_chat_mock_app/utils/image_utils.dart';
 import 'package:flutter_chat_mock_app/widgets/product_item.dart';
 import '../models/message.dart';

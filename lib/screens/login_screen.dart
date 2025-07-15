@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_mock_app/data/sample_users.dart';
-import 'package:flutter_chat_mock_app/models/user.dart';
 import 'package:flutter_chat_mock_app/routes/fade_page_route.dart';
-import 'package:flutter_chat_mock_app/screens/main_screen.dart';
 import 'package:flutter_chat_mock_app/screens/register_screen.dart';
-import 'package:flutter_chat_mock_app/services/auth_service.dart';
-import 'package:flutter_chat_mock_app/services/google_sign_in_service.dart';
+import 'package:flutter_chat_mock_app/utils/login_screen_handlers.dart';
 import '../theme/app_colors.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -21,26 +17,25 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _obscurePassword = true;
 
-  final bool _isLocalTest = false;
+  // final bool _isLocalTest = false;
+  // void _attemptLogin(phoneNumber, password) {
+  //   final matchedUsers = sampleUsers.where(
+  //     (u) => u.phoneNumber == phoneNumber && u.password == password,
+  //   );
 
-  void _attemptLogin(phoneNumber, password) {
-    final matchedUsers = sampleUsers.where(
-      (u) => u.phoneNumber == phoneNumber && u.password == password,
-    );
+  //   final User? user = matchedUsers.isNotEmpty ? matchedUsers.first : null;
 
-    final User? user = matchedUsers.isNotEmpty ? matchedUsers.first : null;
-
-    if (user != null) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const MainScreen()),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Tài khoản hoặc mật khẩu không đúng')),
-      );
-    }
-  }
+  //   if (user != null) {
+  //     Navigator.pushReplacement(
+  //       context,
+  //       MaterialPageRoute(builder: (_) => const MainScreen()),
+  //     );
+  //   } else {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text('Tài khoản hoặc mật khẩu không đúng')),
+  //     );
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -93,20 +88,18 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 24),
               ElevatedButton(
-                //onPressed: _attemptLogin,
                 onPressed: () {
                   final phoneNumber = _phoneNumberController.text.trim();
                   final password = _passwordController.text.trim();
-
-                  if (_isLocalTest) {
-                    _attemptLogin(phoneNumber, password);
-                  } else {
-                    AuthService.loginAndNavigate(
-                      context,
-                      phoneNumber,
-                      password,
-                    );
-                  }
+                  // if (_isLocalTest) {
+                  //   _attemptLogin(phoneNumber, password);
+                  // } else {
+                  LoginScreenHandlers.handleLoginPhone(
+                    context,
+                    phoneNumber,
+                    password,
+                  );
+                  // }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.sendButton,
@@ -124,19 +117,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 12),
+
+              //Đăng nhập bằng Google
               ElevatedButton(
-                onPressed: () async {
-                  final userCredential =
-                      await GoogleSignInService.signInWithGoogle();
-                  if (userCredential != null) {
-                    GoogleSignInService.printFirebaseIdToken();
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (_) => const MainScreen()),
-                    );
-                  } else {
-                    // Người dùng đã huỷ
-                  }
+                onPressed: () {
+                  LoginScreenHandlers.handleLoginSocial(context, "GOOGLE");
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,

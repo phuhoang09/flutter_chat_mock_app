@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '../services/api_service.dart'; // dùng để gửi OTP xác minh
-import '../services/auth_service.dart';
+import 'package:flutter_chat_mock_app/utils/register_screen_handlers.dart';
 
 class OtpScreen extends StatefulWidget {
   final String phoneNumber;
@@ -20,28 +19,28 @@ class _OtpScreenState extends State<OtpScreen> {
   final _otpController = TextEditingController();
   bool isLoading = false;
 
-  void _verifyOtp() async {
-    setState(() => isLoading = true);
-    final isValid = await ApiService.verifyOtp(
-      widget.phoneNumber,
-      _otpController.text,
-    );
+  // void _verifyOtp() async {
+  //   setState(() => isLoading = true);
+  //   final isValid = await ApiService.verifyOtp(
+  //     widget.phoneNumber,
+  //     _otpController.text,
+  //   );
 
-    if (isValid) {
-      await AuthService.registerAndNavigate(
-        context,
-        widget.phoneNumber,
-        widget.password,
-        _otpController.text,
-      );
-    } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("OTP không đúng")));
-    }
+  //   if (isValid) {
+  //     await AuthService.registerAndNavigate(
+  //       context,
+  //       widget.phoneNumber,
+  //       widget.password,
+  //       _otpController.text,
+  //     );
+  //   } else {
+  //     ScaffoldMessenger.of(
+  //       context,
+  //     ).showSnackBar(SnackBar(content: Text("OTP không đúng")));
+  //   }
 
-    setState(() => isLoading = false);
-  }
+  //   setState(() => isLoading = false);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +60,7 @@ class _OtpScreenState extends State<OtpScreen> {
                 ? CircularProgressIndicator()
                 : ElevatedButton(
                     onPressed: () async {
-                      await AuthService.registerAndNavigate(
+                      await RegisterScreenHandlers.handleRegisterPhone(
                         context,
                         widget.phoneNumber,
                         widget.password,
