@@ -1,3 +1,4 @@
+// main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_mock_app/screens/splash_screen.dart';
 import 'theme/app_colors.dart';

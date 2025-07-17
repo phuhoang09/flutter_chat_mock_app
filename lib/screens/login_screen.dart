@@ -47,11 +47,6 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Image.asset(
-              //   'assets/images/cat_head_purple.png',
-              //   width: 160,
-              //   height: 160,
-              // ),
               Icon(Icons.pets_rounded, color: AppColors.appBar, size: 200),
               const SizedBox(height: 32),
               TextField(
