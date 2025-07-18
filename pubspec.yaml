@@ -75,6 +75,7 @@ flutter:
       - assets/images/splash_screen_doggo.png
       - assets/images/icon_edit_splash.png
       - assets/images/icon_profile_splash.png
+      - assets/images/google_button_logo.png
       - assets/flags/VN.png
   # To add assets to your application, add an assets section, like this:
   # assets:

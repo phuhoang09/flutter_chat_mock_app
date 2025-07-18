@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_mock_app/enums/splash_sction_sheet.dart';
+import 'package:flutter_chat_mock_app/enums/splash_action_sheet.dart';
 import 'package:flutter_chat_mock_app/utils/size_config.dart';
 
 class IntroActionSheet extends StatelessWidget {
@@ -48,14 +48,14 @@ class IntroActionSheet extends StatelessWidget {
                 // Main Area Container
                 SizedBox(
                   width: SizeConfig.scaleWidth(327),
-                  height: SizeConfig.scaleHeight(240),
+                  // height: SizeConfig.scaleHeight(240),
                   // color: Colors.red,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [_buildContent()],
                   ),
                 ),
-                SizedBox(height: SizeConfig.scaleHeight(32)),
+                SizedBox(height: SizeConfig.scaleHeight(16)),
                 _buildButton(),
               ],
             ),
@@ -71,7 +71,7 @@ class IntroActionSheet extends StatelessWidget {
     return Container(
       //padding: EdgeInsets.symmetric(vertical: SizeConfig.scaleWidth(24)),
       width: SizeConfig.scaleWidth(327),
-      height: SizeConfig.scaleHeight(240),
+      // height: SizeConfig.scaleHeight(240),
       //color: Colors.red,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -124,16 +124,21 @@ class IntroActionSheet extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
         SizedBox(height: SizeConfig.scaleHeight(10)),
-        Text(
-          'Tạo hồ sơ cá nhân hóa cho từng thú cưng yêu quý của bạn trên PawBuddy. Chia sẻ tên, giống, và tuổi của chúng trong khi kết nối với một cộng đồng sôi động.',
-          style: TextStyle(
-            fontFamily: 'Quicksand',
-            fontWeight: FontWeight.w500,
-            fontSize: SizeConfig.scaleFont(16),
-            color: const Color(0xFF808B9A),
-            height: 24 / 16,
+        ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: SizeConfig.scaleFont(16) * 1.5 * 8,
           ),
-          textAlign: TextAlign.center,
+          child: Text(
+            'Tạo hồ sơ cá nhân hóa cho từng thú cưng yêu quý của bạn trên PawBuddy. Chia sẻ tên, giống, và tuổi của chúng trong khi kết nối với một cộng đồng sôi động.',
+            style: TextStyle(
+              fontFamily: 'Quicksand',
+              fontWeight: FontWeight.w500,
+              fontSize: SizeConfig.scaleFont(16),
+              color: const Color(0xFF808B9A),
+              height: 24 / 16,
+            ),
+            textAlign: TextAlign.center,
+          ),
         ),
       ],
     );
@@ -152,7 +157,7 @@ class IntroActionSheet extends StatelessWidget {
           ),
         ),
         onPressed: () {
-          changeSheet(SplashActionSheet.permission);
+          changeSheet(SplashActionSheet.signInUp);
         },
         child: Text(
           'Bắt đầu ngay',

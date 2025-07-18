@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   static const Color background = Color(0xFFFAFAFA);
+  static const Color orange = Color(0xFFFFB085);
+  static const Color white = Color(0xFFFFFFFF);
+
   static const Color appBar = Color(0xFFE0BBE4); // Tím pastel
   static const Color messageUser = Color(0xFFFFE4EC); // Hồng nhạt
   static const Color messageBot = Color(0xFFE8DFF8); // Tím nhạt
