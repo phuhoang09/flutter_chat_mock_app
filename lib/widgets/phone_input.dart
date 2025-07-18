@@ -1,9 +1,55 @@
-// 📄 shared/phone_input.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_mock_app/models/country.dart';
+import 'package:flutter_chat_mock_app/theme/app_colors.dart';
 import 'package:flutter_chat_mock_app/utils/size_config.dart';
 
-class PhoneInput extends StatelessWidget {
+class PhoneInput extends StatefulWidget {
   const PhoneInput({super.key});
+
+  @override
+  State<PhoneInput> createState() => _PhoneInputState();
+}
+
+class _PhoneInputState extends State<PhoneInput> {
+  Country _selectedCountry = countryList.first;
+
+  void _showCountryPicker() async {
+    final selected = await showModalBottomSheet<Country>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      backgroundColor: AppColors.background,
+      builder: (_) {
+        return ListView.separated(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          itemCount: countryList.length,
+          separatorBuilder: (_, __) => const Divider(height: 1),
+          itemBuilder: (context, index) {
+            final country = countryList[index];
+            return ListTile(
+              leading: Image.asset(
+                country.flagAsset,
+                width: 24,
+                height: 16,
+                fit: BoxFit.cover,
+              ),
+              title: Text(
+                country.dialCode,
+                style: const TextStyle(fontWeight: FontWeight.w500),
+              ),
+              trailing: Text(country.name),
+              onTap: () => Navigator.pop(context, country),
+            );
+          },
+        );
+      },
+    );
+
+    if (selected != null) {
+      setState(() => _selectedCountry = selected);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,21 +74,19 @@ class PhoneInput extends StatelessWidget {
             height: SizeConfig.scaleWidth(24),
             width: SizeConfig.scaleWidth(87),
             child: InkWell(
-              onTap: () {
-                // TODO: show modal bottom sheet chọn mã vùng
-              },
+              onTap: _showCountryPicker,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Image.asset(
-                    'assets/flags/VN.png',
+                    _selectedCountry.flagAsset,
                     width: flagWidth,
                     height: flagHeight,
                     fit: BoxFit.cover,
                   ),
                   SizedBox(width: SizeConfig.scaleWidth(8)),
                   Text(
-                    '+84',
+                    _selectedCountry.dialCode,
                     style: TextStyle(
                       fontSize: SizeConfig.scaleFont(14),
                       fontWeight: FontWeight.w500,

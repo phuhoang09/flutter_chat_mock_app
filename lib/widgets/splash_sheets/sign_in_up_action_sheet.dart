@@ -31,6 +31,14 @@ class _SignInUpActionSheetState extends State<SignInUpActionSheet> {
     _pageController = PageController(initialPage: _selectedTabIndex);
   }
 
+  void _onSocialLoginSuccess() {
+    widget.changeSheet(SplashActionSheet.finalStep);
+  }
+
+  void _onSocialLoginNotFound() {
+    widget.changeSheet(SplashActionSheet.signInUp, formTabIndex: 1);
+  }
+
   @override
   Widget build(BuildContext context) {
     final sheetWidth = SizeConfig.scaleWidth(375);
@@ -96,12 +104,10 @@ class _SignInUpActionSheetState extends State<SignInUpActionSheet> {
                             physics: const NeverScrollableScrollPhysics(),
                             children: [
                               SignInForm(
+                                onSubmitted: () {},
+                                onSocialLoginSuccess: _onSocialLoginSuccess,
+                                onSocialLoginNotFound: _onSocialLoginNotFound,
                                 changeSheet: widget.changeSheet,
-                                onSubmitted: () {
-                                  widget.changeSheet(
-                                    SplashActionSheet.signInUp,
-                                  );
-                                },
                               ),
                               SignUpForm(
                                 changeSheet: widget.changeSheet,

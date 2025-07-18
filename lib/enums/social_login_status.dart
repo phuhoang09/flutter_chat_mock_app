@@ -1,1 +1,7 @@
-enum SocialLoginStatus { success, userCancelled, invalidToken, networkError }
+enum SocialLoginStatus {
+  success,
+  userCancelled,
+  accountNotFound,
+  invalidToken,
+  networkError,
+}

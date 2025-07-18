@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_mock_app/enums/social_login_platform.dart';
 import 'package:flutter_chat_mock_app/enums/social_login_status.dart';
 import 'package:flutter_chat_mock_app/services/api_service.dart';
 import 'package:flutter_chat_mock_app/services/google_auth_service.dart';
@@ -12,7 +13,7 @@ class FirebaseAuthService {
   ) async {
     User? user;
 
-    if (socialPlatform == "GOOGLE") {
+    if (socialPlatform == SocialPlatform.google.value) {
       user = await GoogleAuthService.signInGoogle();
     }
 
@@ -22,17 +23,34 @@ class FirebaseAuthService {
       final idTokenResult = await user.getIdTokenResult();
       final userId = idTokenResult.claims?["user_id"];
       final expirationTimeInSecs = idTokenResult.claims?["exp"];
+      final dateTime = DateTime.fromMillisecondsSinceEpoch(
+        expirationTimeInSecs * 1000,
+        isUtc: true,
+      );
+      final iso8601String = dateTime.toIso8601String();
 
       if (userId == null || expirationTimeInSecs == null) {
         return (SocialLoginStatus.invalidToken, null);
       }
 
-      final response = await ApiService.loginSocial(
+      final response = await ApiService.socialLogin(
         userId,
-        expirationTimeInSecs,
+        socialPlatform,
+        iso8601String,
       );
 
-      return (SocialLoginStatus.success, response);
+      debugPrint("ApiService.socialLogin: $response");
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return (SocialLoginStatus.success, response);
+      }
+
+      if (response.statusCode == 404 &&
+          (response.data['error'] == 'account_not_found')) {
+        return (SocialLoginStatus.accountNotFound, response);
+      }
+
+      return (SocialLoginStatus.networkError, response); // fallback
     } catch (e) {
       debugPrint("Firebase signInWithFirebase error: $e");
       return (SocialLoginStatus.networkError, null);

@@ -1,8 +1,12 @@
 // 📄 forms/sign_in_form.dart
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_mock_app/enums/social_login_platform.dart';
+import 'package:flutter_chat_mock_app/enums/social_login_status.dart';
 import 'package:flutter_chat_mock_app/enums/splash_action_sheet.dart';
+import 'package:flutter_chat_mock_app/services/firebase_auth_service.dart';
 import 'package:flutter_chat_mock_app/theme/app_colors.dart';
+import 'package:flutter_chat_mock_app/utils/dialog_utils.dart';
 import 'package:flutter_chat_mock_app/utils/size_config.dart';
 import 'package:flutter_chat_mock_app/widgets/splash_action_button.dart';
 import 'package:flutter_chat_mock_app/widgets/input_field.dart';
@@ -10,12 +14,62 @@ import 'package:flutter_chat_mock_app/widgets/phone_input.dart';
 
 class SignInForm extends StatelessWidget {
   final VoidCallback onSubmitted;
+  final void Function()? onSocialLoginSuccess;
+  final void Function()? onSocialLoginNotFound;
   final void Function(SplashActionSheet next, {int? formTabIndex}) changeSheet;
   const SignInForm({
     super.key,
     required this.onSubmitted,
+    this.onSocialLoginSuccess,
+    this.onSocialLoginNotFound,
     required this.changeSheet,
   });
+
+  Future<void> _handleSocialLogin(
+    BuildContext context,
+    String socialPlatform,
+  ) async {
+    final (status, response) = await FirebaseAuthService.signInWithFirebase(
+      context,
+      socialPlatform,
+    );
+    switch (status) {
+      case SocialLoginStatus.success:
+        // if (context.mounted) {
+        onSocialLoginSuccess?.call();
+      // }
+
+      case SocialLoginStatus.accountNotFound:
+        onSocialLoginNotFound?.call();
+
+      case SocialLoginStatus.userCancelled:
+        // if (context.mounted) {
+        DialogUtils.showErrorDialog(
+          context,
+          title: 'Đã huỷ đăng nhập',
+          message: '',
+        );
+      // }
+
+      case SocialLoginStatus.invalidToken:
+        // if (context.mounted) {
+        DialogUtils.showErrorDialog(
+          context,
+          title: 'Token không hợp lệ',
+          message: '',
+        );
+      // }
+
+      case SocialLoginStatus.networkError:
+        // if (context.mounted) {
+        DialogUtils.showErrorDialog(
+          context,
+          title: 'Lỗi mạng',
+          message: 'Không thể kết nối đến máy chủ',
+        );
+      // }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +97,7 @@ class SignInForm extends StatelessWidget {
           icon: Image.asset('assets/images/google_button_logo.png'),
           text: 'Đăng nhập bằng Google',
           color: AppColors.white,
-          onTap: onSubmitted,
+          onTap: () => _handleSocialLogin(context, SocialPlatform.google.value),
         ),
       ],
     );
@@ -112,33 +166,6 @@ class _WelcomeText extends StatelessWidget {
     );
   }
 }
-
-// class _SignInButton extends StatelessWidget {
-//   const _SignInButton();
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       height: 54,
-//       width: 327,
-//       decoration: BoxDecoration(
-//         color: const Color(0xFFFFB085),
-//         borderRadius: BorderRadius.circular(999),
-//       ),
-//       child: Center(
-//         child: Text(
-//           'Đăng Nhập',
-//           style: TextStyle(
-//             fontFamily: 'Quicksand',
-//             fontWeight: FontWeight.w500,
-//             fontSize: SizeConfig.scaleFont(14),
-//             color: Colors.black,
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
 
 class _DividerWithText extends StatelessWidget {
   const _DividerWithText();

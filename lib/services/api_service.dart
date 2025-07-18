@@ -9,8 +9,8 @@ class ApiService {
       receiveTimeout: const Duration(seconds: 10),
       headers: {'Content-Type': 'application/json'},
       validateStatus: (status) {
-        // Chỉ accept các status 2xx
-        return status != null && status >= 200 && status < 300;
+        return status != null && status >= 200 && status < 500;
+        // Cho phép mọi status từ 200 đến 499 => 404 sẽ không bị throw
       },
     ),
   );
@@ -70,11 +70,19 @@ class ApiService {
     }
   }
 
-  static Future<Response> loginSocial(String firebaseUid, num expTimeInSecs) {
+  static Future<Response> socialLogin(
+    String firebaseUid,
+    String socialPlatform,
+    String expTimeInString,
+  ) {
     return _dio.post(
       '/v1/api/app/auth/social-login',
       options: Options(headers: {'system': 'capcat_app'}),
-      data: {'uid': firebaseUid, 'exp': expTimeInSecs},
+      data: {
+        'external_id': firebaseUid,
+        'provider': socialPlatform,
+        'expires_at': expTimeInString,
+      },
     );
   }
 
@@ -92,6 +100,4 @@ class ApiService {
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
   }
-
-  // Thêm các API khác tại đây...
 }

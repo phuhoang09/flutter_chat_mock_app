@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_mock_app/theme/app_colors.dart';
 
 class DialogUtils {
   static Future<void> showErrorDialog(
@@ -9,6 +10,7 @@ class DialogUtils {
     return showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.background,
         title: Text(title),
         content: Text(message),
         actions: [

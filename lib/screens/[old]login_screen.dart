@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_mock_app/routes/fade_page_route.dart';
-import 'package:flutter_chat_mock_app/screens/register_screen.dart';
-import 'package:flutter_chat_mock_app/utils/login_screen_handlers.dart';
+import 'package:flutter_chat_mock_app/screens/%5Bold%5Dregister_screen.dart';
+import 'package:flutter_chat_mock_app/utils/%5Bold%5Dlogin_screen_handlers.dart';
 import '../theme/app_colors.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -116,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
               //Đăng nhập bằng Google
               ElevatedButton(
                 onPressed: () {
-                  LoginScreenHandlers.handleLoginSocial(context, "GOOGLE");
+                  LoginScreenHandlers.handleSocialLogin(context, "GOOGLE");
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
