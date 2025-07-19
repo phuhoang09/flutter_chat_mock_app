@@ -6,8 +6,8 @@ import 'package:flutter_chat_mock_app/utils/transition_config.dart';
 import 'package:flutter_chat_mock_app/widgets/splash_sheets/final_action_sheet.dart';
 import 'package:flutter_chat_mock_app/widgets/splash_sheets/forgot_password_enter_phone_sheet.dart';
 import 'package:flutter_chat_mock_app/widgets/splash_sheets/forgot_password_sent_new_sheet.dart';
-import 'package:flutter_chat_mock_app/widgets/splash_sheets/intro_action_sheet.dart';
-import 'package:flutter_chat_mock_app/widgets/splash_sheets/sign_in_up_action_sheet.dart';
+import 'package:flutter_chat_mock_app/widgets/splash_sheets/intro_sheet.dart';
+import 'package:flutter_chat_mock_app/widgets/splash_sheets/sign_in_up_sheet.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -86,7 +86,7 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Widget _buildSignInUpSheet() {
-    return SignInUpActionSheet(
+    return SignInUpSheet(
       changeSheet: _changeSheet,
       initialFormTabIndex: _signInUpFormTabIndex,
     );
@@ -154,7 +154,7 @@ class _SplashScreenState extends State<SplashScreen>
               controller: _sheetPageController,
               physics: const NeverScrollableScrollPhysics(),
               children: [
-                IntroActionSheet(changeSheet: _changeSheet),
+                IntroSheet(changeSheet: _changeSheet),
                 _buildSignInUpSheet(),
                 ForgotPasswordEnterPhoneSheet(changeSheet: _changeSheet),
                 ForgotPasswordSentNewSheet(changeSheet: _changeSheet),

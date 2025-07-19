@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_mock_app/enums/splash_action_sheet.dart';
 import 'package:flutter_chat_mock_app/utils/size_config.dart';
 
-class IntroActionSheet extends StatelessWidget {
+class IntroSheet extends StatelessWidget {
   final void Function(SplashActionSheet nextSheet) changeSheet;
-  const IntroActionSheet({super.key, required this.changeSheet});
+  const IntroSheet({super.key, required this.changeSheet});
 
   @override
   Widget build(BuildContext context) {

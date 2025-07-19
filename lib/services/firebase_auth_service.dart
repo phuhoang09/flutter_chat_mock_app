@@ -11,14 +11,14 @@ class FirebaseAuthService {
     BuildContext context,
     String socialPlatform,
   ) async {
-    User? user;
-
+    OAuthCredential? oAuthCredential;
     if (socialPlatform == SocialPlatform.google.value) {
-      user = await GoogleAuthService.signInGoogle();
+      oAuthCredential = await GoogleAuthService.signInGoogle();
     }
-
+    final UserCredential userCredential = await FirebaseAuth.instance
+        .signInWithCredential(oAuthCredential!);
+    User? user = userCredential.user;
     if (user == null) return (SocialLoginStatus.userCancelled, null);
-
     try {
       final idTokenResult = await user.getIdTokenResult();
       final userId = idTokenResult.claims?["user_id"];

@@ -6,21 +6,21 @@ import 'package:flutter_chat_mock_app/widgets/sign_in_form.dart';
 import 'package:flutter_chat_mock_app/widgets/sign_up_form.dart';
 import '../tab_selector.dart';
 
-class SignInUpActionSheet extends StatefulWidget {
+class SignInUpSheet extends StatefulWidget {
   final void Function(SplashActionSheet next, {int? formTabIndex}) changeSheet;
   final int initialFormTabIndex;
 
-  const SignInUpActionSheet({
+  const SignInUpSheet({
     super.key,
     required this.changeSheet,
     this.initialFormTabIndex = 0,
   });
 
   @override
-  State<SignInUpActionSheet> createState() => _SignInUpActionSheetState();
+  State<SignInUpSheet> createState() => _SignInUpSheetState();
 }
 
-class _SignInUpActionSheetState extends State<SignInUpActionSheet> {
+class _SignInUpSheetState extends State<SignInUpSheet> {
   late int _selectedTabIndex;
   late final PageController _pageController;
 
