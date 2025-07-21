@@ -116,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
               //Đăng nhập bằng Google
               ElevatedButton(
                 onPressed: () {
-                  LoginScreenHandlers.handleSocialLogin(context, "GOOGLE");
+                  // LoginScreenHandlers.handleSocialLogin(context, "GOOGLE");
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,

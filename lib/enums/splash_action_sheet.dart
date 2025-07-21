@@ -3,5 +3,7 @@ enum SplashActionSheet {
   signInUp,
   forgotPasswordEnterPhone,
   forgotPasswordSentNew,
+  socialRegisterEnterPhone,
+  socialRegisterEnterOtp,
   finalStep,
 }

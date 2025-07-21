@@ -8,6 +8,8 @@ import 'package:flutter_chat_mock_app/widgets/splash_sheets/forgot_password_ente
 import 'package:flutter_chat_mock_app/widgets/splash_sheets/forgot_password_sent_new_sheet.dart';
 import 'package:flutter_chat_mock_app/widgets/splash_sheets/intro_sheet.dart';
 import 'package:flutter_chat_mock_app/widgets/splash_sheets/sign_in_up_sheet.dart';
+import 'package:flutter_chat_mock_app/widgets/splash_sheets/social_register_enter_otp_sheet.dart';
+import 'package:flutter_chat_mock_app/widgets/splash_sheets/social_register_enter_phone_sheet.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -24,6 +26,7 @@ class _SplashScreenState extends State<SplashScreen>
   late final PageController _sheetPageController;
   int _currentIndex = 0;
   int _signInUpFormTabIndex = 0; // 0 = SignIn, 1 = SignUp
+  Map<String, dynamic>? _currentCustomDataMap;
 
   @override
   void initState() {
@@ -71,9 +74,16 @@ class _SplashScreenState extends State<SplashScreen>
     super.dispose();
   }
 
-  void _changeSheet(SplashActionSheet next, {int? formTabIndex}) {
+  void _changeSheet(
+    SplashActionSheet next, {
+    int? formTabIndex,
+    Map<String, dynamic>? customDataMap,
+  }) {
     if (formTabIndex != null && next == SplashActionSheet.signInUp) {
       _signInUpFormTabIndex = formTabIndex;
+    }
+    if (customDataMap != null) {
+      _currentCustomDataMap = customDataMap;
     }
     _sheetPageController.animateToPage(
       next.index,
@@ -158,6 +168,14 @@ class _SplashScreenState extends State<SplashScreen>
                 _buildSignInUpSheet(),
                 ForgotPasswordEnterPhoneSheet(changeSheet: _changeSheet),
                 ForgotPasswordSentNewSheet(changeSheet: _changeSheet),
+                SocialRegisterEnterPhoneSheet(
+                  changeSheet: _changeSheet,
+                  customDataMap: _currentCustomDataMap,
+                ),
+                SocialRegisterEnterOtpSheet(
+                  changeSheet: _changeSheet,
+                  customDataMap: _currentCustomDataMap,
+                ),
                 FinalActionSheet(changeSheet: _changeSheet),
               ],
             ),

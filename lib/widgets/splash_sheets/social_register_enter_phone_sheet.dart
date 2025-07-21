@@ -1,51 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_mock_app/enums/otp_type.dart';
 import 'package:flutter_chat_mock_app/enums/splash_action_sheet.dart';
+import 'package:flutter_chat_mock_app/services/api_service.dart';
+import 'package:flutter_chat_mock_app/theme/app_colors.dart';
 import 'package:flutter_chat_mock_app/utils/size_config.dart';
-import 'package:flutter_chat_mock_app/utils/transition_config.dart';
-import 'package:flutter_chat_mock_app/widgets/sign_in_form.dart';
-import 'package:flutter_chat_mock_app/widgets/sign_up_form.dart';
-import '../tab_selector.dart';
+import 'package:flutter_chat_mock_app/widgets/heading_with_back_arrow.dart';
+import 'package:flutter_chat_mock_app/widgets/phone_input.dart';
+import 'package:flutter_chat_mock_app/widgets/splash_action_button.dart';
 
-class SignInUpSheet extends StatefulWidget {
+class SocialRegisterEnterPhoneSheet extends StatefulWidget {
   final void Function(
-    SplashActionSheet next, {
+    SplashActionSheet destinationSheet, {
     int? formTabIndex,
     Map<String, dynamic>? customDataMap,
   })
   changeSheet;
-
-  final int initialFormTabIndex;
-
-  const SignInUpSheet({
+  final Map<String, dynamic>? customDataMap;
+  const SocialRegisterEnterPhoneSheet({
     super.key,
     required this.changeSheet,
-    this.initialFormTabIndex = 0,
+    this.customDataMap,
   });
 
   @override
-  State<SignInUpSheet> createState() => _SignInUpSheetState();
+  State<SocialRegisterEnterPhoneSheet> createState() =>
+      _SocialRegisterEnterPhoneSheetState();
 }
 
-class _SignInUpSheetState extends State<SignInUpSheet> {
-  late int _selectedTabIndex;
-  late final PageController _pageController;
+class _SocialRegisterEnterPhoneSheetState
+    extends State<SocialRegisterEnterPhoneSheet> {
+  String _phoneNumber = '';
 
   @override
   void initState() {
     super.initState();
-    _selectedTabIndex = widget.initialFormTabIndex;
-    _pageController = PageController(initialPage: _selectedTabIndex);
-  }
-
-  void _onSocialLoginSuccess() {
-    widget.changeSheet(SplashActionSheet.finalStep);
-  }
-
-  void _onSocialLoginNotFound(Map<String, dynamic>? customDataMap) {
-    widget.changeSheet(
-      SplashActionSheet.socialRegisterEnterPhone,
-      customDataMap: customDataMap,
-    );
   }
 
   @override
@@ -88,49 +76,53 @@ class _SignInUpSheetState extends State<SignInUpSheet> {
               child: Column(
                 children: [
                   SizedBox(height: bulletSize / 2),
-                  Container(
+                  // Main Area Container
+                  SizedBox(
                     width: SizeConfig.scaleWidth(327),
-                    height: SizeConfig.scaleHeight(505),
+                    // height: SizeConfig.scaleHeight(240),
+                    // color: Colors.red,
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        TabSelector(
-                          selectedIndex: _selectedTabIndex,
-                          onTabChanged: (index) {
-                            setState(() => _selectedTabIndex = index);
-                            _pageController.animateToPage(
-                              index,
-                              duration: const Duration(
-                                milliseconds: TransitionConfig.durationShort,
-                              ),
-                              curve: Curves.easeInOut,
+                        HeadingWithBackArrow(
+                          title: 'Nhập số điện thoại',
+                          onBack: () {
+                            widget.changeSheet(
+                              SplashActionSheet.signInUp,
+                              formTabIndex: 0,
                             );
                           },
                         ),
-                        SizedBox(height: SizeConfig.scaleHeight(24)),
-                        Expanded(
-                          child: PageView(
-                            controller: _pageController,
-                            physics: const NeverScrollableScrollPhysics(),
-                            children: [
-                              SignInForm(
-                                onSubmitted: () {},
-                                onSocialLoginSuccess: _onSocialLoginSuccess,
-                                onSocialLoginNotFound: _onSocialLoginNotFound,
-                                changeSheet: widget.changeSheet,
-                              ),
-                              SignUpForm(
-                                changeSheet: widget.changeSheet,
-                                onSubmitted: () {
-                                  widget.changeSheet(
-                                    SplashActionSheet.signInUp,
-                                  );
-                                },
-                              ),
-                            ],
+                        SizedBox(height: SizeConfig.scaleHeight(8)),
+                        ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minHeight: SizeConfig.scaleFont(12) * 1.5 * 3,
                           ),
+                          child: Text(
+                            'Vui lòng nhập số điện thoại để hoàn thành đăng nhập nhé.',
+                            style: TextStyle(
+                              fontFamily: 'Quicksand',
+                              fontWeight: FontWeight.w400,
+                              fontSize: SizeConfig.scaleFont(12),
+                              letterSpacing: 0.2,
+                              color: Color(0xFF7B7B8D),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: SizeConfig.scaleHeight(16)),
+                        PhoneInput(
+                          onChanged: (fullPhoneNumber) {
+                            setState(() => _phoneNumber = fullPhoneNumber);
+                          },
                         ),
                       ],
                     ),
+                  ),
+                  SizedBox(height: SizeConfig.scaleHeight(16)),
+                  SplashActionButton(
+                    text: 'Tiếp tục',
+                    color: AppColors.orange,
+                    onTap: onTapContinue,
                   ),
                 ],
               ),
@@ -182,5 +174,22 @@ class _SignInUpSheetState extends State<SignInUpSheet> {
         ),
       ),
     );
+  }
+
+  onTapContinue() async {
+    bool didSendOtpSuccess = await ApiService.requestOtp(
+      _phoneNumber,
+      OtpType.register.value,
+    );
+    if (didSendOtpSuccess) {
+      Map<String, dynamic> customDataMapWithPhone = Map.from(
+        widget.customDataMap ?? {},
+      );
+      customDataMapWithPhone['phone'] = _phoneNumber;
+      widget.changeSheet(
+        SplashActionSheet.socialRegisterEnterOtp,
+        customDataMap: customDataMapWithPhone,
+      );
+    }
   }
 }

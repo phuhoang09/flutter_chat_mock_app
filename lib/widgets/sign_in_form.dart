@@ -15,7 +15,8 @@ import 'package:flutter_chat_mock_app/widgets/phone_input.dart';
 class SignInForm extends StatelessWidget {
   final VoidCallback onSubmitted;
   final void Function()? onSocialLoginSuccess;
-  final void Function()? onSocialLoginNotFound;
+  final void Function(Map<String, dynamic>? socialRegisterMap)?
+  onSocialLoginNotFound;
   final void Function(SplashActionSheet next, {int? formTabIndex}) changeSheet;
   const SignInForm({
     super.key,
@@ -29,10 +30,8 @@ class SignInForm extends StatelessWidget {
     BuildContext context,
     String socialPlatform,
   ) async {
-    final (status, response) = await FirebaseAuthService.signInWithFirebase(
-      context,
-      socialPlatform,
-    );
+    final (status, response, socialRegisterMap) =
+        await FirebaseAuthService.signInWithFirebase(context, socialPlatform);
     switch (status) {
       case SocialLoginStatus.success:
         // if (context.mounted) {
@@ -40,7 +39,7 @@ class SignInForm extends StatelessWidget {
       // }
 
       case SocialLoginStatus.accountNotFound:
-        onSocialLoginNotFound?.call();
+        onSocialLoginNotFound?.call(socialRegisterMap);
 
       case SocialLoginStatus.userCancelled:
         // if (context.mounted) {

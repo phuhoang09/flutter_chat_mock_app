@@ -7,10 +7,8 @@ import 'package:flutter_chat_mock_app/services/api_service.dart';
 import 'package:flutter_chat_mock_app/services/google_auth_service.dart';
 
 class FirebaseAuthService {
-  static Future<(SocialLoginStatus, Response?)> signInWithFirebase(
-    BuildContext context,
-    String socialPlatform,
-  ) async {
+  static Future<(SocialLoginStatus, Response?, Map<String, dynamic>?)>
+  signInWithFirebase(BuildContext context, String socialPlatform) async {
     OAuthCredential? oAuthCredential;
     if (socialPlatform == SocialPlatform.google.value) {
       oAuthCredential = await GoogleAuthService.signInGoogle();
@@ -18,7 +16,7 @@ class FirebaseAuthService {
     final UserCredential userCredential = await FirebaseAuth.instance
         .signInWithCredential(oAuthCredential!);
     User? user = userCredential.user;
-    if (user == null) return (SocialLoginStatus.userCancelled, null);
+    if (user == null) return (SocialLoginStatus.userCancelled, null, null);
     try {
       final idTokenResult = await user.getIdTokenResult();
       final userId = idTokenResult.claims?["user_id"];
@@ -27,33 +25,44 @@ class FirebaseAuthService {
         expirationTimeInSecs * 1000,
         isUtc: true,
       );
-      final iso8601String = dateTime.toIso8601String();
+      final expTimeString = dateTime.toIso8601String();
 
       if (userId == null || expirationTimeInSecs == null) {
-        return (SocialLoginStatus.invalidToken, null);
+        return (SocialLoginStatus.invalidToken, null, null);
       }
 
       final response = await ApiService.socialLogin(
         userId,
         socialPlatform,
-        iso8601String,
+        expTimeString,
       );
 
       debugPrint("ApiService.socialLogin: $response");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return (SocialLoginStatus.success, response);
+        return (SocialLoginStatus.success, response, null);
       }
 
       if (response.statusCode == 404 &&
           (response.data['error'] == 'account_not_found')) {
-        return (SocialLoginStatus.accountNotFound, response);
+        final socialRegisterMap = {
+          'external_id': userId,
+          'provider': socialPlatform,
+          'first_name': idTokenResult.claims?['name'] ?? '',
+          'last_name': '',
+          'avatar': idTokenResult.claims?["picture"] ?? "",
+          'email': idTokenResult.claims?["email"] ?? "",
+          'expires_at': expTimeString,
+          // 'phone': '',
+          // 'otp_code': '',
+        };
+        return (SocialLoginStatus.accountNotFound, response, socialRegisterMap);
       }
 
-      return (SocialLoginStatus.networkError, response); // fallback
+      return (SocialLoginStatus.networkError, response, null); // fallback
     } catch (e) {
       debugPrint("Firebase signInWithFirebase error: $e");
-      return (SocialLoginStatus.networkError, null);
+      return (SocialLoginStatus.networkError, null, null);
     }
   }
 }

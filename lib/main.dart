@@ -1,6 +1,8 @@
 // main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_mock_app/screens/splash_screen.dart';
+import 'package:flutter_chat_mock_app/test/custom_page_navigator.dart';
+import 'package:flutter_chat_mock_app/test/pageview_navigator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'theme/app_colors.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -11,6 +13,9 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(const ProviderScope(child: MyApp()));
+  // runApp(
+  //   MaterialApp(debugShowCheckedModeBanner: false, home: CustomPageNavigator()),
+  // );
 }
 
 class MyApp extends StatelessWidget {

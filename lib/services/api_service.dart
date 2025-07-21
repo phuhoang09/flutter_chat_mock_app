@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 
 class ApiService {
   static final Dio _dio = Dio(
@@ -42,18 +43,19 @@ class ApiService {
     );
   }
 
-  static Future<void> sendOtp(String phone) async {
+  static Future<bool> requestOtp(String phone, String otpType) async {
     try {
       final response = await _dio.post(
         '/v1/api/app/auth/request-otp',
-        data: {'phone': phone, "type": "REGISTER"},
+        data: {'phone': phone, "type": otpType},
       );
-      if (response.statusCode != 201) {
+      if (![200, 201].contains(response.statusCode)) {
         throw Exception('Gửi OTP thất bại');
       }
+      return true;
     } catch (e) {
-      print("Lỗi gửi OTP: $e");
-      rethrow;
+      debugPrint("Lỗi gửi OTP: $e");
+      return false;
     }
   }
 
@@ -82,6 +84,34 @@ class ApiService {
         'external_id': firebaseUid,
         'provider': socialPlatform,
         'expires_at': expTimeInString,
+      },
+    );
+  }
+
+  static Future<Response> socialRegister(
+    String externalId,
+    String provider,
+    String firstName,
+    String lastName,
+    String avatar,
+    String email,
+    String expiresAt,
+    String phone,
+    String otpCode,
+  ) {
+    return _dio.post(
+      '/v1/api/app/auth/social-register',
+      options: Options(headers: {'system': 'capcat_app'}),
+      data: {
+        'external_id': externalId,
+        'provider': provider,
+        'first_name': firstName,
+        'last_name': lastName,
+        'avatar': avatar,
+        'email': email,
+        'expires_at': expiresAt,
+        'phone': phone,
+        'otp_code': otpCode,
       },
     );
   }

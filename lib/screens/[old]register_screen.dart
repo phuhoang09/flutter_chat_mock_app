@@ -58,7 +58,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
     setState(() => isLoading = true);
 
     try {
-      await ApiService.sendOtp(phoneNumber); // Gửi OTP đến backend
+      await ApiService.requestOtp(
+        phoneNumber,
+        "REGISTER",
+      ); // Gửi OTP đến backend
 
       // Thành công → chuyển sang màn hình nhập OTP
       Navigator.push(

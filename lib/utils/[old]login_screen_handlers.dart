@@ -8,57 +8,57 @@ import 'package:flutter_chat_mock_app/services/firebase_auth_service.dart';
 import 'dialog_utils.dart';
 
 class LoginScreenHandlers {
-  static Future<SocialLoginStatus> handleSocialLogin(
-    BuildContext context,
-    String socialPlatform,
-  ) async {
-    final (status, response) = await FirebaseAuthService.signInWithFirebase(
-      context,
-      socialPlatform,
-    );
-    return status;
+  // static Future<SocialLoginStatus> handleSocialLogin(
+  //   BuildContext context,
+  //   String socialPlatform,
+  // ) async {
+  //   final (status, response) = await FirebaseAuthService.signInWithFirebase(
+  //     context,
+  //     socialPlatform,
+  //   );
+  //   return status;
 
-    // switch (status) {
-    //   case SocialLoginStatus.success:
-    //     if (context.mounted) {
-    //       Navigator.pushReplacement(
-    //         context,
-    //         MaterialPageRoute(builder: (_) => const MainScreen()),
-    //       );
-    //     }
-    //     return true;
+  //   // switch (status) {
+  //   //   case SocialLoginStatus.success:
+  //   //     if (context.mounted) {
+  //   //       Navigator.pushReplacement(
+  //   //         context,
+  //   //         MaterialPageRoute(builder: (_) => const MainScreen()),
+  //   //       );
+  //   //     }
+  //   //     return true;
 
-    //   case SocialLoginStatus.userCancelled:
-    //     if (context.mounted) {
-    //       DialogUtils.showErrorDialog(
-    //         context,
-    //         title: 'Đã huỷ đăng nhập',
-    //         message: '',
-    //       );
-    //     }
-    //     return false;
+  //   //   case SocialLoginStatus.userCancelled:
+  //   //     if (context.mounted) {
+  //   //       DialogUtils.showErrorDialog(
+  //   //         context,
+  //   //         title: 'Đã huỷ đăng nhập',
+  //   //         message: '',
+  //   //       );
+  //   //     }
+  //   //     return false;
 
-    //   case SocialLoginStatus.invalidToken:
-    //     if (context.mounted) {
-    //       DialogUtils.showErrorDialog(
-    //         context,
-    //         title: 'Token không hợp lệ',
-    //         message: '',
-    //       );
-    //     }
-    //     return false;
+  //   //   case SocialLoginStatus.invalidToken:
+  //   //     if (context.mounted) {
+  //   //       DialogUtils.showErrorDialog(
+  //   //         context,
+  //   //         title: 'Token không hợp lệ',
+  //   //         message: '',
+  //   //       );
+  //   //     }
+  //   //     return false;
 
-    //   case SocialLoginStatus.networkError:
-    //     if (context.mounted) {
-    //       DialogUtils.showErrorDialog(
-    //         context,
-    //         title: 'Lỗi mạng',
-    //         message: 'Không thể kết nối đến máy chủ',
-    //       );
-    //     }
-    //     return false;
-    // }
-  }
+  //   //   case SocialLoginStatus.networkError:
+  //   //     if (context.mounted) {
+  //   //       DialogUtils.showErrorDialog(
+  //   //         context,
+  //   //         title: 'Lỗi mạng',
+  //   //         message: 'Không thể kết nối đến máy chủ',
+  //   //       );
+  //   //     }
+  //   //     return false;
+  //   // }
+  // }
 
   static Future<void> handleLoginPhone(
     BuildContext context,

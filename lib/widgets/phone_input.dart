@@ -4,7 +4,8 @@ import 'package:flutter_chat_mock_app/theme/app_colors.dart';
 import 'package:flutter_chat_mock_app/utils/size_config.dart';
 
 class PhoneInput extends StatefulWidget {
-  const PhoneInput({super.key});
+  final void Function(String)? onChanged;
+  const PhoneInput({super.key, this.onChanged});
 
   @override
   State<PhoneInput> createState() => _PhoneInputState();
@@ -12,6 +13,16 @@ class PhoneInput extends StatefulWidget {
 
 class _PhoneInputState extends State<PhoneInput> {
   Country _selectedCountry = countryList.first;
+  final TextEditingController _phoneController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    _phoneController.addListener(() {
+      _emitFullPhoneNumber();
+    });
+  }
 
   void _showCountryPicker() async {
     final selected = await showModalBottomSheet<Country>(
@@ -48,7 +59,14 @@ class _PhoneInputState extends State<PhoneInput> {
 
     if (selected != null) {
       setState(() => _selectedCountry = selected);
+      _emitFullPhoneNumber();
     }
+  }
+
+  void _emitFullPhoneNumber() {
+    final fullPhone =
+        '${_selectedCountry.dialCode}${_phoneController.text.trim()}';
+    widget.onChanged?.call(fullPhone);
   }
 
   @override
@@ -112,6 +130,7 @@ class _PhoneInputState extends State<PhoneInput> {
             child: Container(
               padding: EdgeInsets.only(right: SizeConfig.scaleWidth(16)),
               child: TextField(
+                controller: _phoneController,
                 keyboardType: TextInputType.phone,
                 decoration: InputDecoration(
                   border: InputBorder.none,
@@ -132,5 +151,11 @@ class _PhoneInputState extends State<PhoneInput> {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _phoneController.dispose();
+    super.dispose();
   }
 }
