@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
-import '[old]login_screen.dart';
 import 'main_screen.dart';
 import '../utils/size_config.dart';
 
@@ -33,10 +32,10 @@ class _AuthCheckScreenState extends State<AuthCheckScreen> {
         MaterialPageRoute(builder: (_) => const MainScreen()),
       );
     } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
-      );
+      // Navigator.pushReplacement(
+      //   context,
+      //   MaterialPageRoute(builder: (_) => const LoginScreen()),
+      // );
     }
   }
 

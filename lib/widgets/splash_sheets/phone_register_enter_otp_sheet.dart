@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_mock_app/enums/social_register_status.dart';
+import 'package:flutter_chat_mock_app/enums/phone_register_status.dart';
 import 'package:flutter_chat_mock_app/services/auth_service.dart';
 import 'package:flutter_chat_mock_app/theme/app_colors.dart';
 import 'package:flutter_chat_mock_app/utils/dialog_utils.dart';
@@ -10,8 +10,8 @@ import 'package:flutter_chat_mock_app/widgets/heading_with_back_arrow.dart';
 import 'package:flutter_chat_mock_app/widgets/number_input_field.dart';
 import 'package:flutter_chat_mock_app/widgets/splash_action_button.dart';
 
-class SocialRegisterEnterOtpSheet extends StatefulWidget {
-  final void Function()? onSocialRegisterSuccess;
+class PhoneRegisterEnterOtpSheet extends StatefulWidget {
+  final void Function()? onPhoneRegisterSuccess;
   final void Function(
     SplashActionSheet nextSheet, {
     int? formTabIndex,
@@ -19,20 +19,20 @@ class SocialRegisterEnterOtpSheet extends StatefulWidget {
   })
   changeSheet;
   final Map<String, dynamic>? customDataMap;
-  const SocialRegisterEnterOtpSheet({
+  const PhoneRegisterEnterOtpSheet({
     super.key,
-    this.onSocialRegisterSuccess,
+    this.onPhoneRegisterSuccess,
     required this.changeSheet,
     this.customDataMap,
   });
 
   @override
-  State<SocialRegisterEnterOtpSheet> createState() =>
-      _SocialRegisterEnterOtpSheetState();
+  State<PhoneRegisterEnterOtpSheet> createState() =>
+      _PhoneRegisterEnterOtpSheetState();
 }
 
-class _SocialRegisterEnterOtpSheetState
-    extends State<SocialRegisterEnterOtpSheet> {
+class _PhoneRegisterEnterOtpSheetState
+    extends State<PhoneRegisterEnterOtpSheet> {
   final TextEditingController _otpController = TextEditingController();
   Timer? _timer;
   int _remainingSeconds = 10;
@@ -42,12 +42,7 @@ class _SocialRegisterEnterOtpSheetState
   void initState() {
     super.initState();
     _startCountdown();
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel(); // Bắt buộc phải huỷ khi thoát khỏi sheet
-    super.dispose();
+    debugPrint(widget.customDataMap.toString());
   }
 
   void _startCountdown() {
@@ -81,35 +76,36 @@ class _SocialRegisterEnterOtpSheetState
     _startCountdown();
   }
 
-  Future<void> _handleSocialRegister(BuildContext context) async {
+  Future<void> _handlePhoneRegister(BuildContext context) async {
     final Map<String, dynamic>? dataMap = widget.customDataMap;
     if (dataMap == null) {
       return;
     }
-    final (status, response) = await AuthService.registerSocial(
+    final (status, response) = await AuthService.registerPhone(
       context,
-      dataMap['externalId'],
-      dataMap['provider'],
-      dataMap['firstName'],
-      dataMap['lastName'],
-      dataMap['avatar'],
-      dataMap['email'],
-      dataMap['expiresAt'],
-      dataMap['phone'],
-      dataMap['otpCode'],
+      dataMap['name'],
+      dataMap['phoneNumber'],
+      dataMap['password'],
+      dataMap['otp'],
     );
     switch (status) {
-      case SocialRegisterStatus.success:
-        widget.onSocialRegisterSuccess?.call();
+      case PhoneRegisterStatus.success:
+        widget.onPhoneRegisterSuccess?.call();
         break;
-      case SocialRegisterStatus.fail:
+      case PhoneRegisterStatus.fail:
         DialogUtils.showErrorDialog(
           context,
-          title: 'Không thể đăng ký',
-          message: 'Bạn hãy thử lại sau nhé.',
+          title: 'Đăng ký không thành công',
+          message: 'Bạn hãy thử lại sau nhé',
         );
         break;
     }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel(); // Bắt buộc phải huỷ khi thoát khỏi sheet
+    super.dispose();
   }
 
   @override
@@ -225,7 +221,7 @@ class _SocialRegisterEnterOtpSheetState
                     text: 'Xác nhận',
                     color: AppColors.orange,
                     onTap: () {
-                      _handleSocialRegister(context);
+                      _handlePhoneRegister(context);
                     },
                   ),
                 ],

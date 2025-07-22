@@ -26,17 +26,17 @@ class ApiService {
   }
 
   static Future<Response> register(
+    String name,
     String phoneNumber,
     String password,
     String otp,
   ) {
     return _dio.post(
       '/v1/api/app/auth/register',
-      // '/users/create',
       options: Options(headers: {'system': 'capcat_app'}),
       data: {
+        'name': '',
         'account_name': phoneNumber,
-        'email': '',
         'password': password,
         'otp_code': otp,
       },

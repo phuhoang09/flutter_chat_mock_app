@@ -1,12 +1,19 @@
-// 📄 shared/input_field.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_mock_app/utils/size_config.dart';
 
 class InputField extends StatelessWidget {
   final String hintText;
   final IconData icon;
+  final TextEditingController controller;
+  final bool obscureText;
 
-  const InputField({super.key, required this.hintText, required this.icon});
+  const InputField({
+    super.key,
+    required this.hintText,
+    required this.icon,
+    required this.controller,
+    this.obscureText = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +32,8 @@ class InputField extends StatelessWidget {
           SizedBox(width: SizeConfig.scaleWidth(12)),
           Expanded(
             child: TextField(
+              controller: controller,
+              obscureText: obscureText,
               decoration: InputDecoration(
                 border: InputBorder.none,
                 hintText: hintText,

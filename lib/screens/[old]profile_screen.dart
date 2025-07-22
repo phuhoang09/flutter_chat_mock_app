@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
-import '[old]login_screen.dart';
 import '../theme/app_colors.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -9,11 +8,11 @@ class ProfileScreen extends StatelessWidget {
   void _logout(BuildContext context) async {
     await AuthService.clearToken();
 
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
-      (route) => false,
-    );
+    // Navigator.pushAndRemoveUntil(
+    //   context,
+    //   MaterialPageRoute(builder: (_) => const LoginScreen()),
+    //   (route) => false,
+    // );
   }
 
   @override

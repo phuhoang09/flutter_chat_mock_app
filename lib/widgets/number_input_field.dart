@@ -3,12 +3,12 @@ import 'package:flutter_chat_mock_app/utils/size_config.dart';
 
 class NumberInputField extends StatelessWidget {
   final String hintText;
-  // final IconData icon;
+  final TextEditingController controller;
 
   const NumberInputField({
     super.key,
     required this.hintText,
-    // required this.icon,
+    required this.controller,
   });
 
   @override
@@ -24,10 +24,9 @@ class NumberInputField extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Icon(icon, color: const Color(0xFF9E9E9E), size: 24),
-          // SizedBox(width: SizeConfig.scaleWidth(12)),
           Expanded(
             child: TextField(
+              controller: controller,
               keyboardType: TextInputType.phone,
               decoration: InputDecoration(
                 border: InputBorder.none,

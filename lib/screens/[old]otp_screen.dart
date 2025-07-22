@@ -60,12 +60,12 @@ class _OtpScreenState extends State<OtpScreen> {
                 ? CircularProgressIndicator()
                 : ElevatedButton(
                     onPressed: () async {
-                      await RegisterScreenHandlers.handleRegisterPhone(
-                        context,
-                        widget.phoneNumber,
-                        widget.password,
-                        _otpController.text,
-                      );
+                      // await RegisterScreenHandlers.handleRegisterPhone(
+                      //   context,
+                      //   widget.phoneNumber,
+                      //   widget.password,
+                      //   _otpController.text,
+                      // );
                     },
                     child: Text("Xác nhận"),
                   ),

@@ -7,6 +7,7 @@ import 'package:flutter_chat_mock_app/widgets/splash_sheets/final_action_sheet.d
 import 'package:flutter_chat_mock_app/widgets/splash_sheets/forgot_password_enter_phone_sheet.dart';
 import 'package:flutter_chat_mock_app/widgets/splash_sheets/forgot_password_sent_new_sheet.dart';
 import 'package:flutter_chat_mock_app/widgets/splash_sheets/intro_sheet.dart';
+import 'package:flutter_chat_mock_app/widgets/splash_sheets/phone_register_enter_otp_sheet.dart';
 import 'package:flutter_chat_mock_app/widgets/splash_sheets/sign_in_up_sheet.dart';
 import 'package:flutter_chat_mock_app/widgets/splash_sheets/social_register_enter_otp_sheet.dart';
 import 'package:flutter_chat_mock_app/widgets/splash_sheets/social_register_enter_phone_sheet.dart';
@@ -23,16 +24,24 @@ class _SplashScreenState extends State<SplashScreen>
   bool _animate = false;
   late final AnimationController _actionSheetController;
   late final Animation<Offset> _slideAnimation;
-  late final PageController _sheetPageController;
+
+  late final AnimationController _pageAnimationController;
+  late Animation<Offset> _currentPageOffset;
+  late Animation<Offset> _nextPageOffset;
+
   int _currentIndex = 0;
-  int _signInUpFormTabIndex = 0; // 0 = SignIn, 1 = SignUp
+  int _nextIndex = 0;
+  bool _isAnimating = false;
+  bool _isForward = true;
+
+  int _signInUpFormTabIndex = 0;
   Map<String, dynamic>? _currentCustomDataMap;
+
+  final List<Widget> _sheets = [];
 
   @override
   void initState() {
     super.initState();
-
-    _sheetPageController = PageController(initialPage: _currentIndex);
 
     _actionSheetController = AnimationController(
       vsync: this,
@@ -46,6 +55,13 @@ class _SplashScreenState extends State<SplashScreen>
             curve: Curves.easeInOut,
           ),
         );
+
+    _pageAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: TransitionConfig.durationShort),
+    );
+
+    _buildSheets();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       SizeConfig.init(context);
@@ -67,11 +83,35 @@ class _SplashScreenState extends State<SplashScreen>
     });
   }
 
-  @override
-  void dispose() {
-    _actionSheetController.dispose();
-    _sheetPageController.dispose();
-    super.dispose();
+  void _buildSheets() {
+    _sheets.addAll([
+      IntroSheet(changeSheet: _changeSheet),
+      SignInUpSheet(
+        changeSheet: _changeSheet,
+        initialFormTabIndex: _signInUpFormTabIndex,
+        onPhoneLoginSuccess: _onPhoneLoginSuccess,
+        onPhoneRegisterSuccess: _onPhoneRegisterSuccess,
+        onSocialLoginSuccess: _onSocialLoginSuccess,
+        onSocialRegisterSuccess: _onSocialRegisterSuccess,
+      ),
+      ForgotPasswordEnterPhoneSheet(changeSheet: _changeSheet),
+      ForgotPasswordSentNewSheet(changeSheet: _changeSheet),
+      PhoneRegisterEnterOtpSheet(
+        changeSheet: _changeSheet,
+        customDataMap: _currentCustomDataMap,
+        onPhoneRegisterSuccess: _onPhoneRegisterSuccess,
+      ),
+      SocialRegisterEnterPhoneSheet(
+        changeSheet: _changeSheet,
+        customDataMap: _currentCustomDataMap,
+      ),
+      SocialRegisterEnterOtpSheet(
+        changeSheet: _changeSheet,
+        customDataMap: _currentCustomDataMap,
+        onSocialRegisterSuccess: _onSocialRegisterSuccess,
+      ),
+      FinalActionSheet(changeSheet: _changeSheet),
+    ]);
   }
 
   void _changeSheet(
@@ -79,27 +119,76 @@ class _SplashScreenState extends State<SplashScreen>
     int? formTabIndex,
     Map<String, dynamic>? customDataMap,
   }) {
+    if (_isAnimating || next.index == _currentIndex) return;
+
     if (formTabIndex != null && next == SplashActionSheet.signInUp) {
       _signInUpFormTabIndex = formTabIndex;
     }
+
     if (customDataMap != null) {
       _currentCustomDataMap = customDataMap;
     }
-    _sheetPageController.animateToPage(
-      next.index,
-      duration: const Duration(milliseconds: TransitionConfig.durationShort),
-      curve: Curves.easeInOut,
-    );
+
     setState(() {
-      _currentIndex = next.index;
+      _nextIndex = next.index;
+      _isForward = _nextIndex > _currentIndex;
+      _isAnimating = true;
+    });
+
+    _currentPageOffset =
+        Tween<Offset>(
+          begin: Offset.zero,
+          end: Offset(_isForward ? -1 : 1, 0),
+        ).animate(
+          CurvedAnimation(
+            parent: _pageAnimationController,
+            curve: Curves.easeInOut,
+          ),
+        );
+
+    _nextPageOffset =
+        Tween<Offset>(
+          begin: Offset(_isForward ? 1 : -1, 0),
+          end: Offset.zero,
+        ).animate(
+          CurvedAnimation(
+            parent: _pageAnimationController,
+            curve: Curves.easeInOut,
+          ),
+        );
+
+    _pageAnimationController.forward(from: 0).then((_) {
+      setState(() {
+        _currentIndex = _nextIndex;
+        _isAnimating = false;
+      });
     });
   }
 
-  Widget _buildSignInUpSheet() {
-    return SignInUpSheet(
-      changeSheet: _changeSheet,
-      initialFormTabIndex: _signInUpFormTabIndex,
+  Widget _buildCurrentSheet() {
+    if (!_isAnimating) return _sheets[_currentIndex];
+
+    return Stack(
+      children: [
+        SlideTransition(
+          position: _currentPageOffset,
+          child: _sheets[_currentIndex],
+        ),
+        SlideTransition(position: _nextPageOffset, child: _sheets[_nextIndex]),
+      ],
     );
+  }
+
+  void _onPhoneLoginSuccess() {}
+  void _onPhoneRegisterSuccess() {}
+  void _onSocialLoginSuccess() {}
+  void _onSocialRegisterSuccess() {}
+
+  @override
+  void dispose() {
+    _actionSheetController.dispose();
+    _pageAnimationController.dispose();
+    super.dispose();
   }
 
   @override
@@ -112,7 +201,7 @@ class _SplashScreenState extends State<SplashScreen>
       backgroundColor: const Color(0xFFFAFAFA),
       body: Stack(
         children: [
-          /// botPart
+          /// Bottom Image
           AnimatedPositioned(
             duration: const Duration(
               milliseconds: TransitionConfig.durationLong,
@@ -137,7 +226,7 @@ class _SplashScreenState extends State<SplashScreen>
             ),
           ),
 
-          /// topPart
+          /// Top Logo
           AnimatedPositioned(
             duration: const Duration(
               milliseconds: TransitionConfig.durationLong,
@@ -157,28 +246,10 @@ class _SplashScreenState extends State<SplashScreen>
             ),
           ),
 
-          /// Slide lên ActionSheet
+          /// Sliding Sheet Content
           SlideTransition(
             position: _slideAnimation,
-            child: PageView(
-              controller: _sheetPageController,
-              physics: const NeverScrollableScrollPhysics(),
-              children: [
-                IntroSheet(changeSheet: _changeSheet),
-                _buildSignInUpSheet(),
-                ForgotPasswordEnterPhoneSheet(changeSheet: _changeSheet),
-                ForgotPasswordSentNewSheet(changeSheet: _changeSheet),
-                SocialRegisterEnterPhoneSheet(
-                  changeSheet: _changeSheet,
-                  customDataMap: _currentCustomDataMap,
-                ),
-                SocialRegisterEnterOtpSheet(
-                  changeSheet: _changeSheet,
-                  customDataMap: _currentCustomDataMap,
-                ),
-                FinalActionSheet(changeSheet: _changeSheet),
-              ],
-            ),
+            child: _buildCurrentSheet(),
           ),
         ],
       ),

@@ -6,12 +6,18 @@ import 'dialog_utils.dart';
 class RegisterScreenHandlers {
   static Future<void> handleRegisterPhone(
     BuildContext context,
+    String name,
     String phoneNumber,
     String password,
     String otp,
   ) async {
     try {
-      final response = await ApiService.register(phoneNumber, password, otp);
+      final response = await ApiService.register(
+        name,
+        phoneNumber,
+        password,
+        otp,
+      );
       debugPrint(response.toString());
       if (!context.mounted) return;
     } on DioException catch (e) {

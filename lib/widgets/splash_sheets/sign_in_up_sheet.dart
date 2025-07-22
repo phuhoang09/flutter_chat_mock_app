@@ -7,6 +7,11 @@ import 'package:flutter_chat_mock_app/widgets/sign_up_form.dart';
 import '../tab_selector.dart';
 
 class SignInUpSheet extends StatefulWidget {
+  final void Function()? onPhoneRegisterSuccess;
+  final void Function()? onPhoneLoginSuccess;
+  final void Function()? onSocialRegisterSuccess;
+  final void Function()? onSocialLoginSuccess;
+
   final void Function(
     SplashActionSheet next, {
     int? formTabIndex,
@@ -20,6 +25,10 @@ class SignInUpSheet extends StatefulWidget {
     super.key,
     required this.changeSheet,
     this.initialFormTabIndex = 0,
+    this.onPhoneRegisterSuccess,
+    this.onPhoneLoginSuccess,
+    this.onSocialRegisterSuccess,
+    this.onSocialLoginSuccess,
   });
 
   @override
@@ -35,10 +44,6 @@ class _SignInUpSheetState extends State<SignInUpSheet> {
     super.initState();
     _selectedTabIndex = widget.initialFormTabIndex;
     _pageController = PageController(initialPage: _selectedTabIndex);
-  }
-
-  void _onSocialLoginSuccess() {
-    widget.changeSheet(SplashActionSheet.finalStep);
   }
 
   void _onSocialLoginNotFound(Map<String, dynamic>? customDataMap) {
@@ -113,19 +118,13 @@ class _SignInUpSheetState extends State<SignInUpSheet> {
                             physics: const NeverScrollableScrollPhysics(),
                             children: [
                               SignInForm(
-                                onSubmitted: () {},
-                                onSocialLoginSuccess: _onSocialLoginSuccess,
+                                onPhoneLoginSuccess: widget.onPhoneLoginSuccess,
+                                onSocialLoginSuccess:
+                                    widget.onSocialLoginSuccess,
                                 onSocialLoginNotFound: _onSocialLoginNotFound,
                                 changeSheet: widget.changeSheet,
                               ),
-                              SignUpForm(
-                                changeSheet: widget.changeSheet,
-                                onSubmitted: () {
-                                  widget.changeSheet(
-                                    SplashActionSheet.signInUp,
-                                  );
-                                },
-                              ),
+                              SignUpForm(changeSheet: widget.changeSheet),
                             ],
                           ),
                         ),

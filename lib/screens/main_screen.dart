@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
 import 'chat_screen.dart';
-import 'profile_screen.dart';
+import '[old]profile_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
