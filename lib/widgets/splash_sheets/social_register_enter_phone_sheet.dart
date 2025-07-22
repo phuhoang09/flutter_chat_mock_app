@@ -179,7 +179,7 @@ class _SocialRegisterEnterPhoneSheetState
   onTapContinue() async {
     bool didSendOtpSuccess = await ApiService.requestOtp(
       _phoneNumber,
-      OtpType.register.value,
+      OtpType.registerGoogle.value,
     );
     if (didSendOtpSuccess) {
       Map<String, dynamic> customDataMapWithPhone = Map.from(

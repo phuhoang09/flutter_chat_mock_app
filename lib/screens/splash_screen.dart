@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_mock_app/enums/splash_action_sheet.dart';
+import 'package:flutter_chat_mock_app/utils/dialog_utils.dart';
 import 'package:flutter_chat_mock_app/utils/size_config.dart';
 import 'package:flutter_chat_mock_app/utils/transition_config.dart';
 import 'package:flutter_chat_mock_app/widgets/splash_sheets/final_action_sheet.dart';
@@ -37,11 +38,14 @@ class _SplashScreenState extends State<SplashScreen>
   int _signInUpFormTabIndex = 0;
   Map<String, dynamic>? _currentCustomDataMap;
 
-  final List<Widget> _sheets = [];
+  late List<Widget?> _sheets;
 
   @override
   void initState() {
     super.initState();
+
+    _sheets = List<Widget?>.filled(SplashActionSheet.values.length, null);
+    _sheets[0] = IntroSheet(changeSheet: _changeSheet);
 
     _actionSheetController = AnimationController(
       vsync: this,
@@ -61,8 +65,6 @@ class _SplashScreenState extends State<SplashScreen>
       duration: const Duration(milliseconds: TransitionConfig.durationShort),
     );
 
-    _buildSheets();
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       SizeConfig.init(context);
       precacheImage(
@@ -76,42 +78,9 @@ class _SplashScreenState extends State<SplashScreen>
     });
 
     Timer(const Duration(seconds: 4), () {
-      setState(() {
-        _animate = true;
-      });
+      setState(() => _animate = true);
       _actionSheetController.forward();
     });
-  }
-
-  void _buildSheets() {
-    _sheets.addAll([
-      IntroSheet(changeSheet: _changeSheet),
-      SignInUpSheet(
-        changeSheet: _changeSheet,
-        initialFormTabIndex: _signInUpFormTabIndex,
-        onPhoneLoginSuccess: _onPhoneLoginSuccess,
-        onPhoneRegisterSuccess: _onPhoneRegisterSuccess,
-        onSocialLoginSuccess: _onSocialLoginSuccess,
-        onSocialRegisterSuccess: _onSocialRegisterSuccess,
-      ),
-      ForgotPasswordEnterPhoneSheet(changeSheet: _changeSheet),
-      ForgotPasswordSentNewSheet(changeSheet: _changeSheet),
-      PhoneRegisterEnterOtpSheet(
-        changeSheet: _changeSheet,
-        customDataMap: _currentCustomDataMap,
-        onPhoneRegisterSuccess: _onPhoneRegisterSuccess,
-      ),
-      SocialRegisterEnterPhoneSheet(
-        changeSheet: _changeSheet,
-        customDataMap: _currentCustomDataMap,
-      ),
-      SocialRegisterEnterOtpSheet(
-        changeSheet: _changeSheet,
-        customDataMap: _currentCustomDataMap,
-        onSocialRegisterSuccess: _onSocialRegisterSuccess,
-      ),
-      FinalActionSheet(changeSheet: _changeSheet),
-    ]);
   }
 
   void _changeSheet(
@@ -128,6 +97,8 @@ class _SplashScreenState extends State<SplashScreen>
     if (customDataMap != null) {
       _currentCustomDataMap = customDataMap;
     }
+
+    _sheets[next.index] ??= _buildSheetFor(next);
 
     setState(() {
       _nextIndex = next.index;
@@ -165,24 +136,90 @@ class _SplashScreenState extends State<SplashScreen>
     });
   }
 
+  Widget _buildSheetFor(SplashActionSheet sheet) {
+    switch (sheet) {
+      case SplashActionSheet.intro:
+        return IntroSheet(changeSheet: _changeSheet);
+      case SplashActionSheet.signInUp:
+        return SignInUpSheet(
+          changeSheet: _changeSheet,
+          initialFormTabIndex: _signInUpFormTabIndex,
+          onPhoneLoginSuccess: _onPhoneLoginSuccess,
+          onPhoneRegisterSuccess: _onPhoneRegisterSuccess,
+          onSocialLoginSuccess: _onSocialLoginSuccess,
+          onSocialRegisterSuccess: _onSocialRegisterSuccess,
+        );
+      case SplashActionSheet.forgotPasswordEnterPhone:
+        return ForgotPasswordEnterPhoneSheet(changeSheet: _changeSheet);
+      case SplashActionSheet.forgotPasswordSentNew:
+        return ForgotPasswordSentNewSheet(changeSheet: _changeSheet);
+      case SplashActionSheet.phoneRegisterEnterOtp:
+        return PhoneRegisterEnterOtpSheet(
+          changeSheet: _changeSheet,
+          customDataMap: _currentCustomDataMap,
+          onPhoneRegisterSuccess: _onPhoneRegisterSuccess,
+        );
+      case SplashActionSheet.socialRegisterEnterPhone:
+        return SocialRegisterEnterPhoneSheet(
+          changeSheet: _changeSheet,
+          customDataMap: _currentCustomDataMap,
+        );
+      case SplashActionSheet.socialRegisterEnterOtp:
+        return SocialRegisterEnterOtpSheet(
+          changeSheet: _changeSheet,
+          customDataMap: _currentCustomDataMap,
+          onSocialRegisterSuccess: _onSocialRegisterSuccess,
+        );
+      case SplashActionSheet.finalStep:
+        return FinalActionSheet(changeSheet: _changeSheet);
+    }
+  }
+
   Widget _buildCurrentSheet() {
-    if (!_isAnimating) return _sheets[_currentIndex];
+    if (!_isAnimating) return _sheets[_currentIndex]!;
 
     return Stack(
       children: [
         SlideTransition(
           position: _currentPageOffset,
-          child: _sheets[_currentIndex],
+          child: _sheets[_currentIndex]!,
         ),
-        SlideTransition(position: _nextPageOffset, child: _sheets[_nextIndex]),
+        SlideTransition(position: _nextPageOffset, child: _sheets[_nextIndex]!),
       ],
     );
   }
 
-  void _onPhoneLoginSuccess() {}
-  void _onPhoneRegisterSuccess() {}
-  void _onSocialLoginSuccess() {}
-  void _onSocialRegisterSuccess() {}
+  void _onPhoneLoginSuccess() {
+    DialogUtils.showErrorDialog(
+      context,
+      title: 'Đăng nhập số điện thoại thành công',
+      message: '',
+    );
+  }
+
+  void _onPhoneRegisterSuccess() {
+    DialogUtils.showErrorDialog(
+      context,
+      title: 'Đăng ký số điện thoại thành công',
+      message: '',
+    );
+  }
+
+  void _onSocialLoginSuccess() {
+    DialogUtils.showErrorDialog(
+      context,
+      title: 'Đăng nhập mạng xã hội thành công',
+      message: '',
+    );
+  }
+
+  void _onSocialRegisterSuccess() {
+    DialogUtils.showErrorDialog(
+      context,
+      title: 'Đăng ký mạng xã hội thành công',
+      message: '',
+    );
+  }
 
   @override
   void dispose() {
@@ -201,7 +238,6 @@ class _SplashScreenState extends State<SplashScreen>
       backgroundColor: const Color(0xFFFAFAFA),
       body: Stack(
         children: [
-          /// Bottom Image
           AnimatedPositioned(
             duration: const Duration(
               milliseconds: TransitionConfig.durationLong,
@@ -225,8 +261,6 @@ class _SplashScreenState extends State<SplashScreen>
               ),
             ),
           ),
-
-          /// Top Logo
           AnimatedPositioned(
             duration: const Duration(
               milliseconds: TransitionConfig.durationLong,
@@ -245,8 +279,6 @@ class _SplashScreenState extends State<SplashScreen>
               ),
             ),
           ),
-
-          /// Sliding Sheet Content
           SlideTransition(
             position: _slideAnimation,
             child: _buildCurrentSheet(),

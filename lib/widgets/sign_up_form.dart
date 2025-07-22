@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_mock_app/enums/otp_type.dart';
 import 'package:flutter_chat_mock_app/enums/splash_action_sheet.dart';
+import 'package:flutter_chat_mock_app/services/api_service.dart';
 import 'package:flutter_chat_mock_app/theme/app_colors.dart';
 import 'package:flutter_chat_mock_app/utils/size_config.dart';
 import 'package:flutter_chat_mock_app/widgets/splash_action_button.dart';
@@ -36,12 +38,19 @@ class _SignUpFormState extends State<SignUpForm> {
     super.dispose();
   }
 
-  void _handleRegisterButtonTap() {
+  void _handleRegisterButtonTap() async {
     String name = _nameController.text;
     String phone = _phoneController.text;
     String password = _passwordController.text;
     String confirmPassword = _confirmPasswordController.text;
-    if (isValidRegistration(phone, password, confirmPassword)) {
+    if (!isValidRegistration(phone, password, confirmPassword)) {
+      return;
+    }
+    bool didSendOtpSuccess = await ApiService.requestOtp(
+      phone,
+      OtpType.register.value,
+    );
+    if (didSendOtpSuccess) {
       Map<String, dynamic> dataMap = {
         'name': name,
         'phone': phone,

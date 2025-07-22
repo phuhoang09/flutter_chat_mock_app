@@ -84,9 +84,9 @@ class _PhoneRegisterEnterOtpSheetState
     final (status, response) = await AuthService.registerPhone(
       context,
       dataMap['name'],
-      dataMap['phoneNumber'],
+      dataMap['phone'],
       dataMap['password'],
-      dataMap['otp'],
+      _otpController.text,
     );
     switch (status) {
       case PhoneRegisterStatus.success:
